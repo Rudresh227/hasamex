@@ -1,0 +1,10 @@
+Requirement Document: 
+Scope_Document.md
+ 
+Implementation Guide: 
+Implementation_Plan.md
+ 
+
+I have given you the Requirement Document and the Implementation Guide for the Application that we are going to build.
+I need you to understand the Context very clearly, if you are stuck or need more clarification Please let me know.
+We will start writing the code after your learning.

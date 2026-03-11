@@ -1,0 +1,2737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hasamex — Expert Database</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1f3d;
+    --navy2: #162847;
+    --navy3: #1e3560;
+    --blue: #2563eb;
+    --blue2: #3b82f6;
+    --sky: #60a5fa;
+    --accent: #f59e0b;
+    --accent2: #fbbf24;
+    --green: #10b981;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --bg: #f0f4fa;
+    --surface: #ffffff;
+    --surface2: #f8faff;
+    --border: #dde5f5;
+    --text: #0f1f3d;
+    --text2: #4b5e8a;
+    --text3: #8899bb;
+    --sidebar-w: 240px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--navy);
+    display: flex; flex-direction: column;
+    z-index: 100;
+    padding: 0;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .logo-mark {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--blue), var(--sky));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 14px; color: white;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .logo-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 18px; color: white;
+    letter-spacing: 0.5px;
+  }
+
+  .logo-sub {
+    font-size: 11px; color: rgba(255,255,255,0.4);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding-left: 42px;
+  }
+
+  .sidebar-section {
+    padding: 20px 12px 8px;
+  }
+
+  .sidebar-section-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: rgba(255,255,255,0.3);
+    padding: 0 8px; margin-bottom: 6px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    cursor: pointer; transition: all 0.15s;
+    color: rgba(255,255,255,0.6);
+    font-size: 13.5px; font-weight: 500;
+    position: relative;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+  .nav-item.active {
+    background: rgba(37,99,235,0.25);
+    color: var(--sky);
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 4px; bottom: 4px;
+    width: 3px; background: var(--blue2); border-radius: 0 3px 3px 0;
+  }
+
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .nav-badge {
+    margin-left: auto; background: var(--blue);
+    color: white; font-size: 11px; font-weight: 600;
+    padding: 1px 7px; border-radius: 20px; min-width: 20px;
+    text-align: center;
+  }
+
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 16px 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .user-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px;
+    background: rgba(255,255,255,0.05); cursor: pointer;
+  }
+
+  .user-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: white; flex-shrink: 0;
+  }
+
+  .user-name { font-size: 13px; font-weight: 500; color: white; }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 60px;
+    display: flex; align-items: center; gap: 16px;
+    position: sticky; top: 0; z-index: 50;
+  }
+
+  .topbar-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 18px;
+    color: var(--navy);
+    margin-right: 8px;
+  }
+
+  .topbar-breadcrumb {
+    font-size: 13px; color: var(--text3);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .topbar-breadcrumb span { color: var(--text2); }
+
+  .topbar-search {
+    margin-left: auto;
+    position: relative;
+    width: 300px;
+  }
+
+  .topbar-search input {
+    width: 100%; padding: 8px 12px 8px 36px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px; font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px; color: var(--text);
+    background: var(--bg);
+    outline: none; transition: border 0.2s;
+  }
+
+  .topbar-search input:focus { border-color: var(--blue2); background: white; }
+
+  .topbar-search svg {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; color: var(--text3);
+  }
+
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500;
+    cursor: pointer; border: none; transition: all 0.15s;
+  }
+
+  .btn svg { width: 15px; height: 15px; }
+
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.35); }
+
+  .btn-ghost { background: transparent; color: var(--text2); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg); color: var(--text); }
+
+  .btn-amber { background: var(--accent); color: white; }
+  .btn-amber:hover { background: #d97706; }
+
+  .btn-sm { padding: 5px 10px; font-size: 12.5px; }
+  .btn-icon { padding: 7px; }
+
+  /* ── PAGE CONTENT ── */
+  .page { padding: 24px 28px; flex: 1; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .stat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+    position: relative; overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .stat-card:hover { box-shadow: 0 4px 20px rgba(15,31,61,0.08); }
+
+  .stat-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+
+  .stat-card:nth-child(1)::after { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+  .stat-card:nth-child(2)::after { background: linear-gradient(90deg, #10b981, #34d399); }
+  .stat-card:nth-child(3)::after { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .stat-card:nth-child(4)::after { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+  .stat-label { font-size: 11.5px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 700; color: var(--navy); line-height: 1; }
+  .stat-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+  .stat-change { font-size: 12px; color: var(--green); font-weight: 500; margin-top: 4px; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 18px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px; flex-wrap: wrap;
+  }
+
+  .filter-label { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; flex-shrink: 0; }
+
+  .filter-chip {
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 12.5px; font-weight: 500; cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: white; color: var(--text2);
+    transition: all 0.15s;
+  }
+
+  .filter-chip:hover, .filter-chip.active {
+    border-color: var(--blue); color: var(--blue);
+    background: rgba(37,99,235,0.06);
+  }
+
+  .filter-select {
+    padding: 6px 28px 6px 10px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text2);
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238899bb' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;
+    appearance: none; cursor: pointer; outline: none;
+  }
+
+  .filter-select:focus { border-color: var(--blue2); }
+
+  .filter-divider { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+
+  .view-toggle { display: flex; background: var(--bg); border-radius: 8px; padding: 3px; gap: 2px; }
+  .view-btn { width: 30px; height: 28px; border-radius: 6px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text3); transition: all 0.15s; }
+  .view-btn.active { background: white; color: var(--blue); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .view-btn svg { width: 14px; height: 14px; }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+
+  .table-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .table-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--navy); }
+  .table-count { font-size: 12px; color: var(--text3); background: var(--bg); padding: 2px 8px; border-radius: 20px; }
+
+  .selected-actions {
+    margin-left: auto; display: flex; align-items: center; gap: 8px;
+  }
+
+  .selected-count {
+    font-size: 12.5px; font-weight: 600; color: var(--blue);
+    background: rgba(37,99,235,0.1); padding: 3px 10px; border-radius: 20px;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead tr { background: var(--surface2); }
+
+  th {
+    padding: 10px 14px; text-align: left;
+    font-size: 11.5px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    user-select: none; cursor: pointer;
+  }
+
+  th:hover { color: var(--navy); }
+
+  th svg { display: inline; width: 12px; height: 12px; margin-left: 3px; vertical-align: middle; }
+
+  td {
+    padding: 12px 14px;
+    font-size: 13.5px; color: var(--text);
+    border-bottom: 1px solid rgba(221,229,245,0.5);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(37,99,235,0.025); }
+
+  tr.selected td { background: rgba(37,99,235,0.05); }
+
+  .checkbox {
+    width: 16px; height: 16px; border-radius: 4px;
+    border: 1.5px solid var(--border); cursor: pointer;
+    appearance: none; background: white; flex-shrink: 0;
+    transition: all 0.15s; position: relative; display: block;
+  }
+
+  .checkbox:checked {
+    background: var(--blue); border-color: var(--blue);
+  }
+
+  .checkbox:checked::after {
+    content: '';
+    position: absolute; left: 4px; top: 2px;
+    width: 6px; height: 9px;
+    border: 2px solid white; border-top: none; border-left: none;
+    transform: rotate(45deg);
+  }
+
+  /* ── EXPERT CELL ── */
+  .expert-cell { display: flex; align-items: center; gap: 10px; }
+
+  .expert-avatar {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    color: white; flex-shrink: 0;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+  }
+
+  .expert-avatar.g2 { background: linear-gradient(135deg, #059669, #0891b2); }
+  .expert-avatar.g3 { background: linear-gradient(135deg, #d97706, #dc2626); }
+  .expert-avatar.g4 { background: linear-gradient(135deg, #7c3aed, #db2777); }
+  .expert-avatar.g5 { background: linear-gradient(135deg, #0891b2, #2563eb); }
+
+  .expert-name { font-weight: 600; font-size: 13.5px; color: var(--navy); }
+  .expert-id { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 0.3px; }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 6px;
+    font-size: 11.5px; font-weight: 500; white-space: nowrap;
+  }
+
+  .badge-blue { background: rgba(37,99,235,0.1); color: #1d4ed8; }
+  .badge-green { background: rgba(16,185,129,0.1); color: #047857; }
+  .badge-amber { background: rgba(245,158,11,0.1); color: #b45309; }
+  .badge-purple { background: rgba(124,58,237,0.1); color: #6d28d9; }
+  .badge-gray { background: rgba(100,116,139,0.1); color: #475569; }
+  .badge-red { background: rgba(239,68,68,0.1); color: #b91c1c; }
+  .badge-teal { background: rgba(20,184,166,0.1); color: #0f766e; }
+
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor; display: inline-block;
+  }
+
+  /* ── ROW ACTIONS ── */
+  .row-actions { display: flex; align-items: center; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+  tr:hover .row-actions { opacity: 1; }
+
+  .icon-btn {
+    width: 28px; height: 28px; border-radius: 6px; border: none;
+    background: transparent; color: var(--text3); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .icon-btn:hover { background: var(--bg); color: var(--navy); }
+  .icon-btn svg { width: 14px; height: 14px; }
+
+  /* ── PAGINATION ── */
+  .pagination {
+    display: flex; align-items: center; gap: 6px;
+    padding: 14px 18px; border-top: 1px solid var(--border);
+  }
+
+  .page-info { font-size: 13px; color: var(--text3); margin-right: auto; }
+
+  .page-btn {
+    width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: white; color: var(--text2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500; transition: all 0.15s;
+  }
+
+  .page-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .page-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
+  .page-btn svg { width: 14px; height: 14px; }
+
+  /* ── MODAL OVERLAY ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15,31,61,0.55);
+    z-index: 200; display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: white; border-radius: 16px;
+    width: 100%; max-width: 680px;
+    max-height: 90vh; overflow-y: auto;
+    transform: translateY(16px); transition: transform 0.2s;
+    box-shadow: 0 20px 60px rgba(15,31,61,0.2);
+  }
+
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-header {
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    position: sticky; top: 0; background: white; z-index: 1;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(37,99,235,0.1);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--blue); flex-shrink: 0;
+  }
+
+  .modal-icon svg { width: 18px; height: 18px; }
+
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); }
+  .modal-sub { font-size: 12.5px; color: var(--text3); margin-top: 1px; }
+
+  .modal-close {
+    margin-left: auto; width: 32px; height: 32px; border-radius: 8px;
+    border: none; background: var(--bg); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text3); transition: all 0.15s;
+  }
+
+  .modal-close:hover { background: rgba(239,68,68,0.1); color: var(--red); }
+  .modal-close svg { width: 16px; height: 16px; }
+
+  .modal-body { padding: 22px 24px; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid .full { grid-column: 1 / -1; }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); letter-spacing: 0.3px; }
+  .form-label span { color: var(--red); }
+
+  .form-input, .form-select, .form-textarea {
+    padding: 9px 12px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--text);
+    background: var(--surface2); outline: none; transition: border 0.2s;
+    width: 100%;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--blue2); background: white;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+
+  .form-input.error { border-color: var(--red); }
+  .form-error { font-size: 11.5px; color: var(--red); display: flex; align-items: center; gap: 4px; }
+  .form-hint { font-size: 11.5px; color: var(--text3); }
+
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238899bb' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+    padding-right: 28px;
+  }
+
+  .section-divider {
+    grid-column: 1 / -1;
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text3); padding: 8px 0 2px;
+    border-top: 1px solid var(--border); margin-top: 4px;
+  }
+
+  .upload-zone {
+    border: 2px dashed var(--border); border-radius: 10px;
+    padding: 20px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: var(--surface2);
+  }
+
+  .upload-zone:hover { border-color: var(--blue2); background: rgba(37,99,235,0.03); }
+  .upload-zone svg { width: 28px; height: 28px; color: var(--text3); margin-bottom: 8px; }
+  .upload-label { font-size: 13px; color: var(--text2); font-weight: 500; }
+  .upload-hint { font-size: 11.5px; color: var(--text3); margin-top: 3px; }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px; justify-content: flex-end;
+    background: var(--surface2); border-radius: 0 0 16px 16px;
+  }
+
+  /* ── PROFILE MODAL ── */
+  .profile-modal { max-width: 820px; }
+
+  .profile-hero {
+    padding: 24px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy3) 100%);
+    position: relative; overflow: hidden;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .profile-hero::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: rgba(37,99,235,0.2);
+    border-radius: 50%;
+  }
+
+  .profile-hero-inner { display: flex; align-items: flex-start; gap: 16px; position: relative; z-index: 1; }
+
+  .profile-avatar {
+    width: 64px; height: 64px; border-radius: 16px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: white;
+    flex-shrink: 0;
+    border: 3px solid rgba(255,255,255,0.2);
+  }
+
+  .profile-hero-info { flex: 1; }
+  .profile-hero-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: white; margin-bottom: 4px; }
+  .profile-hero-title { font-size: 13.5px; color: rgba(255,255,255,0.7); margin-bottom: 10px; }
+
+  .profile-hero-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .hero-tag {
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11.5px; font-weight: 500; color: white;
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(4px);
+  }
+
+  .profile-hero-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  .profile-section { margin-bottom: 20px; }
+  .profile-section-title {
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3);
+    margin-bottom: 10px;
+  }
+
+  .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+  .profile-field {
+    background: var(--surface2); border-radius: 8px; padding: 10px 12px;
+    border: 1px solid var(--border);
+  }
+
+  .profile-field-label { font-size: 11px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
+  .profile-field-value { font-size: 13.5px; color: var(--navy); font-weight: 500; }
+
+  .profile-bio {
+    font-size: 13.5px; color: var(--text2); line-height: 1.65;
+    background: var(--surface2); border-radius: 8px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .strength-pill {
+    display: inline-flex; padding: 4px 10px; border-radius: 6px;
+    background: rgba(37,99,235,0.07); color: var(--blue);
+    font-size: 12px; font-weight: 500; margin: 3px;
+    border: 1px solid rgba(37,99,235,0.15);
+  }
+
+  /* ── DUPLICATE WARNING ── */
+  .dup-warning {
+    background: rgba(245,158,11,0.08);
+    border: 1.5px solid rgba(245,158,11,0.3);
+    border-radius: 10px; padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+
+  .dup-warning svg { width: 20px; height: 20px; color: var(--amber); flex-shrink: 0; margin-top: 1px; }
+  .dup-warning-title { font-size: 13.5px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+  .dup-warning-text { font-size: 12.5px; color: var(--text2); }
+  .dup-link { color: var(--blue); text-decoration: underline; cursor: pointer; }
+
+  /* ── EXPORT PANEL ── */
+  .export-panel {
+    background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(124,58,237,0.06));
+    border: 1.5px solid rgba(37,99,235,0.2);
+    border-radius: 10px; padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .export-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .export-sub { font-size: 12.5px; color: var(--text2); margin-bottom: 12px; }
+  .export-preview {
+    background: white; border-radius: 8px; padding: 12px;
+    border: 1px solid var(--border); font-size: 12.5px; color: var(--text2);
+    line-height: 1.7; font-family: 'DM Mono', monospace;
+    max-height: 120px; overflow-y: auto;
+  }
+
+  /* ── TOAST ── */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+
+  .toast {
+    background: var(--navy); color: white;
+    padding: 12px 16px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 500;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 8px 24px rgba(15,31,61,0.25);
+    transform: translateX(100px); opacity: 0;
+    transition: all 0.3s; min-width: 250px;
+  }
+
+  .toast.show { transform: translateX(0); opacity: 1; }
+  .toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .toast.success svg { color: var(--green); }
+  .toast.error svg { color: var(--red); }
+  .toast.info svg { color: var(--sky); }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--text3);
+  }
+
+  .empty svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text2); margin-bottom: 6px; }
+  .empty-text { font-size: 13.5px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+
+  .stat-card { animation: fadeInUp 0.3s ease both; }
+  .stat-card:nth-child(1) { animation-delay: 0.05s; }
+  .stat-card:nth-child(2) { animation-delay: 0.1s; }
+  .stat-card:nth-child(3) { animation-delay: 0.15s; }
+  .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+  .table-wrap { animation: fadeInUp 0.3s ease 0.2s both; }
+
+  /* linkedin color */
+  .linkedin-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: #0077b5; font-size: 12px; font-weight: 500;
+    text-decoration: none; padding: 3px 8px; border-radius: 6px;
+    background: rgba(0,119,181,0.08); border: 1px solid rgba(0,119,181,0.2);
+    transition: all 0.15s; cursor: pointer;
+  }
+
+  .linkedin-btn:hover { background: rgba(0,119,181,0.15); }
+  .linkedin-btn svg { width: 12px; height: 12px; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  .rate-cell { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; }
+
+  /* ══════════════════════════════════════════════
+     LANDING PAGE
+  ══════════════════════════════════════════════ */
+
+  #landing {
+    position: fixed; inset: 0; z-index: 1000;
+    background: #050d1f;
+    overflow-y: auto; overflow-x: hidden;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  #landing.exit {
+    opacity: 0;
+    transform: translateY(-24px);
+    pointer-events: none;
+  }
+
+  #app-shell {
+    opacity: 0;
+    transition: opacity 0.5s ease 0.3s;
+    pointer-events: none;
+  }
+
+  #app-shell.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── LANDING NAV ── */
+  .l-nav {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center;
+    padding: 0 60px; height: 68px;
+    background: rgba(5,13,31,0.8);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .l-nav-logo { display: flex; align-items: center; gap: 10px; }
+
+  .l-nav-icon {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px; color: white;
+  }
+
+  .l-nav-name {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: white;
+  }
+
+  .l-nav-links {
+    display: flex; align-items: center; gap: 32px;
+    margin-left: 48px;
+  }
+
+  .l-nav-link {
+    font-size: 13.5px; color: rgba(255,255,255,0.55);
+    cursor: pointer; transition: color 0.15s; font-weight: 500;
+  }
+
+  .l-nav-link:hover { color: white; }
+
+  .l-nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+  .l-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 18px; border-radius: 9px;
+    font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500;
+    cursor: pointer; border: none; transition: all 0.2s;
+  }
+
+  .l-btn svg { width: 15px; height: 15px; }
+
+  .l-btn-ghost {
+    background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.75);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .l-btn-ghost:hover { background: rgba(255,255,255,0.12); color: white; }
+
+  .l-btn-primary {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    box-shadow: 0 4px 16px rgba(37,99,235,0.4);
+  }
+
+  .l-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(37,99,235,0.5);
+  }
+
+  /* ── HERO ── */
+  .l-hero {
+    min-height: calc(100vh - 68px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 80px 40px 100px;
+    position: relative; overflow: hidden;
+  }
+
+  /* animated mesh background */
+  .l-hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 40%, rgba(37,99,235,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 60%, rgba(124,58,237,0.14) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 40% at 50% 100%, rgba(16,185,129,0.08) 0%, transparent 50%),
+      #050d1f;
+  }
+
+  .l-hero-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 80%);
+  }
+
+  /* floating orbs */
+  .orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0.5; z-index: 0;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .orb-1 { width: 400px; height: 400px; background: rgba(37,99,235,0.25); top: -100px; left: -100px; animation-delay: 0s; }
+  .orb-2 { width: 300px; height: 300px; background: rgba(124,58,237,0.2); bottom: 0; right: -60px; animation-delay: 3s; }
+  .orb-3 { width: 200px; height: 200px; background: rgba(16,185,129,0.15); bottom: 100px; left: 20%; animation-delay: 5s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  .l-hero-inner { position: relative; z-index: 1; max-width: 860px; }
+
+  .l-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(37,99,235,0.15);
+    border: 1px solid rgba(37,99,235,0.3);
+    border-radius: 100px; padding: 6px 14px;
+    font-size: 12px; font-weight: 600; color: #93c5fd;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    margin-bottom: 28px;
+    animation: fadeInUp 0.6s ease both;
+  }
+
+  .l-eyebrow span {
+    width: 6px; height: 6px; border-radius: 50%; background: #3b82f6;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .l-hero-headline {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(42px, 6vw, 76px);
+    font-weight: 800; line-height: 1.05;
+    color: white; margin-bottom: 24px;
+    letter-spacing: -1.5px;
+    animation: fadeInUp 0.6s ease 0.1s both;
+  }
+
+  .l-hero-headline .hl-blue {
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .l-hero-sub {
+    font-size: 18px; color: rgba(255,255,255,0.55); line-height: 1.7;
+    max-width: 580px; margin: 0 auto 40px;
+    animation: fadeInUp 0.6s ease 0.2s both;
+  }
+
+  .l-hero-cta {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    flex-wrap: wrap;
+    animation: fadeInUp 0.6s ease 0.3s both;
+  }
+
+  .l-cta-primary {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 14px 28px; border-radius: 12px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    border: none;
+    box-shadow: 0 6px 24px rgba(37,99,235,0.45);
+    transition: all 0.2s;
+  }
+
+  .l-cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(37,99,235,0.55);
+  }
+
+  .l-cta-primary svg { width: 17px; height: 17px; }
+
+  .l-cta-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 24px; border-radius: 12px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.75);
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+  }
+
+  .l-cta-secondary:hover { background: rgba(255,255,255,0.12); color: white; }
+
+  /* ── STATS STRIP ── */
+  .l-stats-strip {
+    display: flex; justify-content: center; gap: 0;
+    margin-top: 64px;
+    animation: fadeInUp 0.6s ease 0.4s both;
+  }
+
+  .l-stat {
+    padding: 20px 40px;
+    border-left: 1px solid rgba(255,255,255,0.08);
+    text-align: center;
+  }
+
+  .l-stat:first-child { border-left: none; }
+
+  .l-stat-num {
+    font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800;
+    color: white; line-height: 1;
+    background: linear-gradient(135deg, #ffffff, #93c5fd);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .l-stat-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; }
+
+  /* ── FEATURES SECTION ── */
+  .l-section {
+    padding: 100px 60px;
+    position: relative;
+  }
+
+  .l-section-inner { max-width: 1100px; margin: 0 auto; }
+
+  .l-section-tag {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; color: #60a5fa; margin-bottom: 12px;
+  }
+
+  .l-section-title {
+    font-family: 'Syne', sans-serif; font-size: clamp(28px, 3vw, 42px);
+    font-weight: 800; color: white; line-height: 1.15;
+    letter-spacing: -0.5px; margin-bottom: 16px;
+  }
+
+  .l-section-sub {
+    font-size: 16px; color: rgba(255,255,255,0.45); line-height: 1.7;
+    max-width: 520px; margin-bottom: 56px;
+  }
+
+  .l-features-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+
+  .l-feature-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 28px;
+    transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+
+  .l-feature-card::before {
+    content: '';
+    position: absolute; inset: 0; border-radius: 16px;
+    background: linear-gradient(135deg, rgba(37,99,235,0.1), transparent);
+    opacity: 0; transition: opacity 0.25s;
+  }
+
+  .l-feature-card:hover { border-color: rgba(37,99,235,0.4); transform: translateY(-3px); }
+  .l-feature-card:hover::before { opacity: 1; }
+
+  .l-feature-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px; font-size: 20px;
+  }
+
+  .l-feature-icon svg { width: 22px; height: 22px; }
+
+  .fi-blue { background: rgba(37,99,235,0.2); color: #60a5fa; }
+  .fi-purple { background: rgba(124,58,237,0.2); color: #a78bfa; }
+  .fi-green { background: rgba(16,185,129,0.2); color: #34d399; }
+  .fi-amber { background: rgba(245,158,11,0.2); color: #fbbf24; }
+  .fi-teal { background: rgba(20,184,166,0.2); color: #2dd4bf; }
+  .fi-rose { background: rgba(244,63,94,0.2); color: #fb7185; }
+
+  .l-feature-title {
+    font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700;
+    color: white; margin-bottom: 8px;
+  }
+
+  .l-feature-desc {
+    font-size: 13.5px; color: rgba(255,255,255,0.45); line-height: 1.65;
+  }
+
+  /* ── PREVIEW SECTION ── */
+  .l-preview {
+    padding: 0 60px 100px;
+  }
+
+  .l-preview-inner { max-width: 1100px; margin: 0 auto; }
+
+  .l-preview-frame {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow:
+      0 40px 100px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(255,255,255,0.05),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    background: #0f1f3d;
+    position: relative;
+  }
+
+  .l-preview-bar {
+    background: rgba(255,255,255,0.05);
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .l-preview-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .l-preview-dot:nth-child(1) { background: #ff5f57; }
+  .l-preview-dot:nth-child(2) { background: #febc2e; }
+  .l-preview-dot:nth-child(3) { background: #28c840; }
+
+  .l-preview-url {
+    margin-left: 8px; background: rgba(255,255,255,0.06);
+    border-radius: 6px; padding: 4px 14px;
+    font-family: 'DM Mono', monospace; font-size: 11.5px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .l-preview-screenshot {
+    width: 100%; display: block;
+    background: #f0f4fa;
+    padding: 20px;
+  }
+
+  /* mini app preview inside the frame */
+  .l-mini-app {
+    background: #f0f4fa;
+    padding: 16px;
+    min-height: 340px;
+    display: flex; gap: 12px;
+  }
+
+  .l-mini-sidebar {
+    width: 140px; flex-shrink: 0;
+    background: #0f1f3d; border-radius: 10px;
+    padding: 14px 10px;
+  }
+
+  .l-mini-logo {
+    display: flex; align-items: center; gap: 6px; margin-bottom: 16px; padding: 0 4px;
+  }
+
+  .l-mini-logo-icon {
+    width: 22px; height: 22px; border-radius: 5px;
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 8px; font-weight: 800; color: white;
+  }
+
+  .l-mini-logo-name { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: white; }
+
+  .l-mini-nav-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 8px; border-radius: 6px; margin-bottom: 2px;
+    font-size: 10px; color: rgba(255,255,255,0.45);
+  }
+
+  .l-mini-nav-item.active { background: rgba(37,99,235,0.25); color: #93c5fd; }
+  .l-mini-nav-item svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+  .l-mini-content { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+  .l-mini-topbar {
+    background: white; border-radius: 8px;
+    padding: 9px 14px; display: flex; align-items: center; gap: 8px;
+    border: 1px solid #dde5f5;
+  }
+
+  .l-mini-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: #0f1f3d; }
+
+  .l-mini-search {
+    margin-left: auto; width: 120px; height: 22px;
+    background: #f0f4fa; border-radius: 5px; border: 1px solid #dde5f5;
+  }
+
+  .l-mini-btn {
+    width: 58px; height: 22px; border-radius: 5px;
+    background: #2563eb; display: flex; align-items: center; justify-content: center;
+    font-size: 8.5px; font-weight: 600; color: white;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .l-mini-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+
+  .l-mini-stat-card {
+    background: white; border-radius: 7px; padding: 10px 10px 8px;
+    border: 1px solid #dde5f5;
+    position: relative; overflow: hidden;
+  }
+
+  .l-mini-stat-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+
+  .l-mini-stat-card:nth-child(1)::after { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+  .l-mini-stat-card:nth-child(2)::after { background: linear-gradient(90deg, #10b981, #34d399); }
+  .l-mini-stat-card:nth-child(3)::after { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .l-mini-stat-card:nth-child(4)::after { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+  .l-mini-stat-label { font-size: 7px; color: #8899bb; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .l-mini-stat-val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: #0f1f3d; line-height: 1; }
+
+  .l-mini-table {
+    background: white; border-radius: 8px; overflow: hidden;
+    border: 1px solid #dde5f5; flex: 1;
+  }
+
+  .l-mini-table-header {
+    padding: 8px 12px; border-bottom: 1px solid #dde5f5;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .l-mini-table-title { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; color: #0f1f3d; }
+  .l-mini-badge { background: #f0f4fa; border-radius: 20px; padding: 1px 6px; font-size: 8px; color: #8899bb; }
+
+  .l-mini-thead { background: #f8faff; }
+  .l-mini-th { padding: 5px 8px; font-size: 7.5px; font-weight: 600; color: #8899bb; text-transform: uppercase; border-bottom: 1px solid #dde5f5; }
+
+  .l-mini-tr { border-bottom: 1px solid rgba(221,229,245,0.5); }
+  .l-mini-tr:last-child { border-bottom: none; }
+  .l-mini-tr:hover td { background: rgba(37,99,235,0.02); }
+  .l-mini-td { padding: 6px 8px; font-size: 9px; color: #374151; vertical-align: middle; }
+
+  .l-mini-avatar {
+    width: 20px; height: 20px; border-radius: 5px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 7px; font-weight: 700; color: white;
+  }
+
+  .l-mini-pill {
+    display: inline-block; padding: 1px 5px; border-radius: 4px;
+    font-size: 7.5px; font-weight: 500;
+  }
+
+  /* ── WORKFLOW SECTION ── */
+  .l-workflow {
+    padding: 100px 60px;
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .l-workflow-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    margin-top: 56px;
+  }
+
+  .l-workflow-step {
+    padding: 28px 24px;
+    position: relative;
+  }
+
+  .l-workflow-step:not(:last-child)::after {
+    content: '';
+    position: absolute; top: 46px; right: 0;
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+  }
+
+  .l-step-num {
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
+    color: #3b82f6; letter-spacing: 1px; margin-bottom: 14px;
+  }
+
+  .l-step-title {
+    font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700;
+    color: white; margin-bottom: 10px; line-height: 1.2;
+  }
+
+  .l-step-desc {
+    font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.65;
+  }
+
+  /* ── TECH STACK SECTION ── */
+  .l-tech-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    margin-top: 48px;
+  }
+
+  .l-tech-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 22px 20px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; transition: all 0.2s;
+  }
+
+  .l-tech-card:hover { border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.07); }
+
+  .l-tech-logo {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px;
+    color: white; margin-bottom: 12px;
+  }
+
+  .tl-next { background: linear-gradient(135deg, #000, #333); }
+  .tl-fast { background: linear-gradient(135deg, #059669, #10b981); }
+  .tl-pg   { background: linear-gradient(135deg, #336791, #4a90d9); }
+  .tl-dock { background: linear-gradient(135deg, #1d63ed, #0db7d4); }
+
+  .l-tech-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px; }
+  .l-tech-desc { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+  /* ── CTA SECTION ── */
+  .l-cta-section {
+    padding: 120px 60px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+
+  .l-cta-section-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(37,99,235,0.12), transparent);
+  }
+
+  .l-cta-section-inner { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }
+
+  .l-cta-title {
+    font-family: 'Syne', sans-serif; font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800; color: white; line-height: 1.1;
+    letter-spacing: -0.5px; margin-bottom: 18px;
+  }
+
+  .l-cta-sub { font-size: 16px; color: rgba(255,255,255,0.45); margin-bottom: 36px; line-height: 1.65; }
+
+  /* ── FOOTER ── */
+  .l-footer {
+    padding: 28px 60px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .l-footer-copy { font-size: 12.5px; color: rgba(255,255,255,0.3); margin-left: auto; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .l-anim { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .l-anim.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     LANDING PAGE
+══════════════════════════════════════════════ -->
+<div id="landing">
+
+  <!-- NAV -->
+  <nav class="l-nav">
+    <div class="l-nav-logo">
+      <div class="l-nav-icon">HX</div>
+      <div class="l-nav-name">Hasamex</div>
+    </div>
+    <div class="l-nav-links">
+      <div class="l-nav-link">Features</div>
+      <div class="l-nav-link">How It Works</div>
+      <div class="l-nav-link">Tech Stack</div>
+    </div>
+    <div class="l-nav-right">
+      <button class="l-btn l-btn-ghost" onclick="enterApp()">Log In</button>
+      <button class="l-btn l-btn-primary" onclick="enterApp()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Enter App
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="l-hero">
+    <div class="l-hero-bg"></div>
+    <div class="l-hero-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="l-hero-inner">
+      <div class="l-eyebrow"><span></span> MVP Build · Expert Network Platform</div>
+      <h1 class="l-hero-headline">
+        Your Expert Network,<br>
+        <span class="hl-blue">Beautifully Organized</span>
+      </h1>
+      <p class="l-hero-sub">
+        A production-ready internal tool for managing, searching, and deploying your global network of subject-matter experts — from discovery to the first call.
+      </p>
+      <div class="l-hero-cta">
+        <button class="l-cta-primary" onclick="enterApp()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Open Expert Database
+        </button>
+        <button class="l-cta-secondary" onclick="scrollToFeatures()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          See Features
+        </button>
+      </div>
+
+      <div class="l-stats-strip">
+        <div class="l-stat"><div class="l-stat-num">10</div><div class="l-stat-label">Experts Seeded</div></div>
+        <div class="l-stat"><div class="l-stat-num">5</div><div class="l-stat-label">Sectors Covered</div></div>
+        <div class="l-stat"><div class="l-stat-num">3</div><div class="l-stat-label">Global Regions</div></div>
+        <div class="l-stat"><div class="l-stat-num">12</div><div class="l-stat-label">Calls Completed</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP PREVIEW -->
+  <section class="l-preview">
+    <div class="l-preview-inner">
+      <div class="l-preview-frame l-anim">
+        <div class="l-preview-bar">
+          <div class="l-preview-dot"></div>
+          <div class="l-preview-dot"></div>
+          <div class="l-preview-dot"></div>
+          <div class="l-preview-url">app.hasamex.com/experts</div>
+        </div>
+        <!-- Mini app mockup -->
+        <div class="l-mini-app">
+          <div class="l-mini-sidebar">
+            <div class="l-mini-logo">
+              <div class="l-mini-logo-icon">HX</div>
+              <div class="l-mini-logo-name">Hasamex</div>
+            </div>
+            <div class="l-mini-nav-item active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              Experts
+            </div>
+            <div class="l-mini-nav-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+              Projects
+            </div>
+            <div class="l-mini-nav-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+              Reports
+            </div>
+          </div>
+          <div class="l-mini-content">
+            <div class="l-mini-topbar">
+              <div class="l-mini-title">Expert Database</div>
+              <div class="l-mini-search"></div>
+              <div class="l-mini-btn">+ Add Expert</div>
+            </div>
+            <div class="l-mini-stats">
+              <div class="l-mini-stat-card"><div class="l-mini-stat-label">Total Experts</div><div class="l-mini-stat-val">10</div></div>
+              <div class="l-mini-stat-card"><div class="l-mini-stat-label">Active</div><div class="l-mini-stat-val">7</div></div>
+              <div class="l-mini-stat-card"><div class="l-mini-stat-label">Calls</div><div class="l-mini-stat-val">12</div></div>
+              <div class="l-mini-stat-card"><div class="l-mini-stat-label">Avg Rate</div><div class="l-mini-stat-val">$406</div></div>
+            </div>
+            <div class="l-mini-table">
+              <div class="l-mini-table-header">
+                <div class="l-mini-table-title">Experts</div>
+                <div class="l-mini-badge">10 records</div>
+              </div>
+              <table style="width:100%;border-collapse:collapse">
+                <thead class="l-mini-thead">
+                  <tr>
+                    <th class="l-mini-th">Expert</th>
+                    <th class="l-mini-th">Sector</th>
+                    <th class="l-mini-th">Function</th>
+                    <th class="l-mini-th">Region</th>
+                    <th class="l-mini-th">Rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="l-mini-tr">
+                    <td class="l-mini-td"><div style="display:flex;align-items:center;gap:5px"><div class="l-mini-avatar" style="background:linear-gradient(135deg,#2563eb,#7c3aed)">SR</div><div><div style="font-weight:600;color:#0f1f3d;font-size:9px">Syamal Ram Kishore</div><div style="font-size:7.5px;color:#8899bb">EX-00001</div></div></div></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(16,185,129,0.1);color:#047857">Healthcare</span></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(37,99,235,0.1);color:#1d4ed8">Strategy</span></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(100,116,139,0.1);color:#475569">APAC</span></td>
+                    <td class="l-mini-td" style="font-family:'Syne',sans-serif;font-weight:700;font-size:9px">₹10,000</td>
+                  </tr>
+                  <tr class="l-mini-tr">
+                    <td class="l-mini-td"><div style="display:flex;align-items:center;gap:5px"><div class="l-mini-avatar" style="background:linear-gradient(135deg,#059669,#0891b2)">RS</div><div><div style="font-weight:600;color:#0f1f3d;font-size:9px">Ravinder Singh</div><div style="font-size:7.5px;color:#8899bb">EX-00002</div></div></div></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(245,158,11,0.1);color:#b45309">Energy</span></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(245,158,11,0.1);color:#b45309">Engineering</span></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(100,116,139,0.1);color:#475569">APAC</span></td>
+                    <td class="l-mini-td" style="font-family:'Syne',sans-serif;font-weight:700;font-size:9px">$400</td>
+                  </tr>
+                  <tr class="l-mini-tr">
+                    <td class="l-mini-td"><div style="display:flex;align-items:center;gap:5px"><div class="l-mini-avatar" style="background:linear-gradient(135deg,#7c3aed,#db2777)">VA</div><div><div style="font-weight:600;color:#0f1f3d;font-size:9px">Vinod Alahari</div><div style="font-size:7.5px;color:#8899bb">EX-00004</div></div></div></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(37,99,235,0.1);color:#1d4ed8">Industrials</span></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(124,58,237,0.1);color:#6d28d9">Marketing</span></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(100,116,139,0.1);color:#475569">APAC</span></td>
+                    <td class="l-mini-td" style="font-family:'Syne',sans-serif;font-weight:700;font-size:9px">$250</td>
+                  </tr>
+                  <tr class="l-mini-tr">
+                    <td class="l-mini-td"><div style="display:flex;align-items:center;gap:5px"><div class="l-mini-avatar" style="background:linear-gradient(135deg,#0891b2,#2563eb)">MB</div><div><div style="font-weight:600;color:#0f1f3d;font-size:9px">Majdi Baroud</div><div style="font-size:7.5px;color:#8899bb">EX-00005</div></div></div></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(124,58,237,0.1);color:#6d28d9">Real Estate</span></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(37,99,235,0.1);color:#1d4ed8">Strategy</span></td>
+                    <td class="l-mini-td"><span class="l-mini-pill" style="background:rgba(100,116,139,0.1);color:#475569">EMEA</span></td>
+                    <td class="l-mini-td" style="font-family:'Syne',sans-serif;font-weight:700;font-size:9px">$550</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="l-section" id="features">
+    <div class="l-section-inner">
+      <div class="l-section-tag l-anim">Core Features</div>
+      <h2 class="l-section-title l-anim">Everything you need to<br>manage expert relationships</h2>
+      <p class="l-section-sub l-anim">From onboarding a new expert to sending a shortlist to a client — every step of the workflow is covered.</p>
+      <div class="l-features-grid l-anim">
+        <div class="l-feature-card">
+          <div class="l-feature-icon fi-blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <div class="l-feature-title">Smart Search & Filters</div>
+          <div class="l-feature-desc">Full-text search across name, title, bio, sector, and location. Filter by region, status, employment type, and function simultaneously.</div>
+        </div>
+        <div class="l-feature-card">
+          <div class="l-feature-icon fi-purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="l-feature-title">Expert Profiles</div>
+          <div class="l-feature-desc">Rich profiles with bio, employment history, strength topics, hourly rates, and direct LinkedIn integration. Attach profile PDFs with one click.</div>
+        </div>
+        <div class="l-feature-card">
+          <div class="l-feature-icon fi-green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="l-feature-title">Email-Ready Export</div>
+          <div class="l-feature-desc">Select multiple experts and generate a formatted HTML table ready to paste into Gmail, Outlook, or any email client. Also exports as CSV or Markdown.</div>
+        </div>
+        <div class="l-feature-card">
+          <div class="l-feature-icon fi-amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div class="l-feature-title">Add & Edit Experts</div>
+          <div class="l-feature-desc">Validated forms with real-time email and URL checking. Live duplicate detection warns you before saving if a LinkedIn URL or email already exists.</div>
+        </div>
+        <div class="l-feature-card">
+          <div class="l-feature-icon fi-teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="l-feature-title">PDF Profile Attachments</div>
+          <div class="l-feature-desc">Upload expert profile PDFs directly or attach a link. Files are stored in S3 and accessible via secure presigned URLs with configurable expiry.</div>
+        </div>
+        <div class="l-feature-card">
+          <div class="l-feature-icon fi-rose">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          </div>
+          <div class="l-feature-title">Analytics Dashboard</div>
+          <div class="l-feature-desc">At-a-glance stats on total experts, active T&C status, total calls completed, and average hourly rates across your network.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="l-workflow" id="workflow">
+    <div class="l-section-inner">
+      <div class="l-section-tag l-anim">How It Works</div>
+      <h2 class="l-section-title l-anim">From sourcing to shortlist<br>in four steps</h2>
+      <div class="l-workflow-grid l-anim">
+        <div class="l-workflow-step">
+          <div class="l-step-num">01</div>
+          <div class="l-step-title">Add or Import Experts</div>
+          <div class="l-step-desc">Add experts manually via the validated form, or bulk-seed from your existing Excel database. Duplicate detection runs automatically on email and LinkedIn URL.</div>
+        </div>
+        <div class="l-workflow-step">
+          <div class="l-step-num">02</div>
+          <div class="l-step-title">Search & Filter</div>
+          <div class="l-step-desc">Use full-text search across all fields combined with Sector, Region, Status, and Employment filters to find the right expert in seconds.</div>
+        </div>
+        <div class="l-workflow-step">
+          <div class="l-step-num">03</div>
+          <div class="l-step-title">Review Profiles</div>
+          <div class="l-step-desc">Open rich expert profiles with bio, employment history, strength topics, rates, and LinkedIn. Attach or download their profile PDF without leaving the app.</div>
+        </div>
+        <div class="l-workflow-step">
+          <div class="l-step-num">04</div>
+          <div class="l-step-title">Export to Email</div>
+          <div class="l-step-desc">Select your shortlist and generate a formatted HTML table — copy it directly into any email client. Also available as CSV for CRM import.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section class="l-section" id="tech">
+    <div class="l-section-inner">
+      <div class="l-section-tag l-anim">Tech Stack</div>
+      <h2 class="l-section-title l-anim">Built to scale</h2>
+      <p class="l-section-sub l-anim">Production-ready architecture — not a prototype. Every layer is chosen for maintainability, performance, and growth from 10 to 100,000 experts.</p>
+      <div class="l-tech-grid l-anim">
+        <div class="l-tech-card">
+          <div class="l-tech-logo tl-next">N↗</div>
+          <div class="l-tech-name">Next.js 14</div>
+          <div class="l-tech-desc">App Router · TypeScript · Tailwind · React Query</div>
+        </div>
+        <div class="l-tech-card">
+          <div class="l-tech-logo tl-fast">⚡</div>
+          <div class="l-tech-name">FastAPI</div>
+          <div class="l-tech-desc">Python 3.11 · Pydantic v2 · SQLAlchemy 2 · Alembic</div>
+        </div>
+        <div class="l-tech-card">
+          <div class="l-tech-logo tl-pg">PG</div>
+          <div class="l-tech-name">PostgreSQL 15</div>
+          <div class="l-tech-desc">Full-text search · GIN indexes · Async queries</div>
+        </div>
+        <div class="l-tech-card">
+          <div class="l-tech-logo tl-dock">🐳</div>
+          <div class="l-tech-name">Docker + AWS</div>
+          <div class="l-tech-desc">ECS Fargate · RDS · S3 · CloudFront · GitHub Actions</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="l-cta-section">
+    <div class="l-cta-section-bg"></div>
+    <div class="l-cta-section-inner l-anim">
+      <h2 class="l-cta-title">Ready to explore the database?</h2>
+      <p class="l-cta-sub">10 real expert records are already loaded. Search, filter, view profiles, and test every workflow — right now.</p>
+      <button class="l-cta-primary" style="margin:0 auto" onclick="enterApp()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Open Expert Database
+      </button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="l-footer">
+    <div class="l-nav-logo">
+      <div class="l-nav-icon" style="width:28px;height:28px;font-size:11px">HX</div>
+      <div class="l-nav-name" style="font-size:15px">Hasamex</div>
+    </div>
+    <div class="l-footer-copy">© 2026 Hasamex · Expert Network Platform · MVP Build</div>
+  </footer>
+
+</div><!-- /#landing -->
+
+<!-- ══════════════════════════════════════════════
+     APP SHELL (existing app)
+══════════════════════════════════════════════ -->
+<div id="app-shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">HX</div>
+      <div class="logo-name">Hasamex</div>
+    </div>
+    <div class="logo-sub">Expert Network</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Main</div>
+    <div class="nav-item active" onclick="showPage('experts')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Experts
+      <span class="nav-badge" id="navBadge">10</span>
+    </div>
+    <div class="nav-item" onclick="showToast('Projects coming soon', 'info')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+      Projects
+    </div>
+    <div class="nav-item" onclick="showToast('Calls log coming soon', 'info')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.64 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.55 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Call Log
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Analytics</div>
+    <div class="nav-item" onclick="showToast('Reports coming soon', 'info')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+      Reports
+    </div>
+    <div class="nav-item" onclick="showToast('Search & matching coming soon', 'info')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      Smart Search
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Admin</div>
+    <div class="nav-item" onclick="showToast('Settings coming soon', 'info')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      Settings
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="user-avatar">JD</div>
+      <div>
+        <div class="user-name">Jamie Doe</div>
+        <div class="user-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-title">Expert Database</div>
+    <div class="topbar-breadcrumb">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="m9 18 6-6-6-6"/></svg>
+      <span>All Experts</span>
+    </div>
+    <div class="topbar-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Search by name, title, sector, location…" id="searchInput" oninput="filterExperts()">
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="openExportModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export
+      </button>
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Expert
+      </button>
+    </div>
+  </header>
+
+  <!-- PAGE -->
+  <div class="page">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Experts</div>
+        <div class="stat-value">10</div>
+        <div class="stat-change">↑ 2 this month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active (T&Cs Signed)</div>
+        <div class="stat-value">7</div>
+        <div class="stat-sub">3 no call yet</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Calls</div>
+        <div class="stat-value">12</div>
+        <div class="stat-sub">Across all experts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg. Hourly Rate</div>
+        <div class="stat-value">$406</div>
+        <div class="stat-sub">USD-denominated</div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <span class="filter-label">Filters</span>
+      <select class="filter-select" id="sectorFilter" onchange="filterExperts()">
+        <option value="">All Sectors</option>
+        <option>Energy</option>
+        <option>Healthcare & Life Sciences</option>
+        <option>Industrials</option>
+        <option>Real Estate</option>
+        <option>TMT</option>
+      </select>
+      <select class="filter-select" id="regionFilter" onchange="filterExperts()">
+        <option value="">All Regions</option>
+        <option>APAC</option>
+        <option>EMEA</option>
+        <option>Americas</option>
+      </select>
+      <select class="filter-select" id="statusFilter" onchange="filterExperts()">
+        <option value="">All Statuses</option>
+        <option>Active T&Cs (Call Completed)</option>
+        <option>Active T&Cs (No Call Yet)</option>
+        <option>Pending</option>
+      </select>
+      <select class="filter-select" id="empFilter" onchange="filterExperts()">
+        <option value="">Employment Status</option>
+        <option>Currently Employed</option>
+        <option>Retired</option>
+        <option>Independent</option>
+      </select>
+      <div class="filter-divider"></div>
+      <div class="filter-chip" id="chip-apac" onclick="toggleChip('apac','regionFilter','APAC')">APAC</div>
+      <div class="filter-chip" id="chip-emea" onclick="toggleChip('emea','regionFilter','EMEA')">EMEA</div>
+      <div class="filter-chip" id="chip-americas" onclick="toggleChip('americas','regionFilter','Americas')">Americas</div>
+      <div class="filter-divider"></div>
+      <div class="view-toggle">
+        <button class="view-btn active" title="Table view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+        </button>
+        <button class="view-btn" title="Card view" onclick="showToast('Card view coming soon', 'info')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <div class="table-title">Experts</div>
+        <div class="table-count" id="tableCount">10 records</div>
+        <div class="selected-actions" id="selectedActions" style="display:none">
+          <span class="selected-count" id="selectedCount">0 selected</span>
+          <button class="btn btn-ghost btn-sm" onclick="openExportModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Selected
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="clearSelection()">Clear</button>
+        </div>
+      </div>
+
+      <table id="expertTable">
+        <thead>
+          <tr>
+            <th style="width:40px"><input type="checkbox" class="checkbox" id="selectAll" onchange="toggleAll(this)"></th>
+            <th>Expert <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></th>
+            <th>Title / Headline</th>
+            <th>Sector</th>
+            <th>Function</th>
+            <th>Region</th>
+            <th>Status</th>
+            <th>Rate</th>
+            <th>Calls</th>
+            <th style="width:100px">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="expertTbody"></tbody>
+      </table>
+
+      <div class="pagination">
+        <div class="page-info" id="pageInfo">Showing 1–10 of 10 experts</div>
+        <button class="page-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn" onclick="showToast('More pages with larger datasets', 'info')">2</button>
+        <button class="page-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     ADD EXPERT MODAL
+══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="addModal" onclick="closeOnBackdrop(event,'addModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      </div>
+      <div>
+        <div class="modal-title">Add New Expert</div>
+        <div class="modal-sub">Fill in the details below to add a new expert to the database</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('addModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Duplicate warning (shown conditionally) -->
+      <div class="dup-warning" id="dupWarning" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>
+          <div class="dup-warning-title">Potential Duplicate Detected</div>
+          <div class="dup-warning-text">An expert with this LinkedIn URL or email already exists: <span class="dup-link">Ravinder Singh (EX-00002)</span>. Please verify before proceeding.</div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="section-divider">Personal Information</div>
+        <div class="form-group">
+          <label class="form-label">First Name <span>*</span></label>
+          <input class="form-input" type="text" placeholder="e.g. Aisha" id="addFirstName" oninput="checkDuplicate()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name <span>*</span></label>
+          <input class="form-input" type="text" placeholder="e.g. Patel">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Primary Email <span>*</span></label>
+          <input class="form-input" type="email" placeholder="expert@email.com" id="addEmail" oninput="validateEmail(this);checkDuplicate()">
+          <span class="form-error" id="emailError" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter a valid email address
+          </span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Primary Phone</label>
+          <input class="form-input" type="text" placeholder="+1 555 000 0000">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">LinkedIn URL</label>
+          <input class="form-input" type="url" placeholder="https://linkedin.com/in/username" id="addLinkedin" oninput="validateURL(this);checkDuplicate()">
+          <span class="form-error" id="urlError" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter a valid URL (must start with https://)
+          </span>
+        </div>
+
+        <div class="section-divider">Location & Classification</div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input class="form-input" type="text" placeholder="City, Country">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Timezone</label>
+          <input class="form-input" type="text" placeholder="UTC+5:30 (IST)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Region <span>*</span></label>
+          <select class="form-select" id="addRegion">
+            <option value="">Select region</option>
+            <option>APAC</option><option>EMEA</option><option>Americas</option><option>Global</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Employment Status</label>
+          <select class="form-select" id="addEmpStatus">
+            <option>Currently Employed</option>
+            <option>Retired</option>
+            <option>Independent</option>
+            <option>Between Roles</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Seniority</label>
+          <select class="form-select" id="addSeniority">
+            <option>C-Level</option><option>VP</option><option>Director</option>
+            <option>Manager</option><option>Head</option><option>Founder</option><option>Senior Manager</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Years of Experience</label>
+          <input class="form-input" type="number" placeholder="e.g. 15" min="0" max="60">
+        </div>
+
+        <div class="section-divider">Professional Details</div>
+        <div class="form-group full">
+          <label class="form-label">Title / Headline <span>*</span></label>
+          <input class="form-input" type="text" placeholder="e.g. Head of Renewable Energy Strategy, APAC">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Primary Sector <span>*</span></label>
+          <select class="form-select" id="addSector">
+            <option value="">Select sector</option>
+            <option>Energy</option><option>Healthcare & Life Sciences</option><option>Industrials</option>
+            <option>Real Estate</option><option>TMT</option><option>Financial Services</option>
+            <option>Consumer</option><option>Infrastructure</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expert Function</label>
+          <select class="form-select" id="addFunc">
+            <option value="">Select function</option>
+            <option>Strategy</option><option>Engineering</option><option>Marketing</option>
+            <option>Finance</option><option>Operations</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Role</label>
+          <select class="form-select" id="addRole">
+            <option value="">Select role</option>
+            <option>Manufacturer</option><option>Operator</option><option>Service Provider</option>
+            <option>Consultant</option><option>Regulator</option><option>Investor</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Bio</label>
+          <textarea class="form-textarea" placeholder="Brief professional background and expertise summary…" style="min-height:90px"></textarea>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Employment History</label>
+          <textarea class="form-textarea" placeholder="e.g. Head of Marketing, Signify (2020–present); Director, Philips Lighting (2015–2020)…" style="min-height:80px"></textarea>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Strength Topics</label>
+          <input class="form-input" type="text" placeholder="e.g. Solar PV Engineering · Battery Storage · Grid Integration (separate with ·)">
+        </div>
+
+        <div class="section-divider">Rates & Status</div>
+        <div class="form-group">
+          <label class="form-label">Currency</label>
+          <select class="form-select" id="addCurrency">
+            <option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>AED</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hourly Rate</label>
+          <input class="form-input" type="number" placeholder="e.g. 400" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">HCMS Classification</label>
+          <select class="form-select" id="addHcms">
+            <option>Excellent</option><option>Good</option><option>Average</option><option>Under Review</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expert Status</label>
+          <select class="form-select" id="addStatus">
+            <option>Active T&Cs (Call Completed)</option>
+            <option>Active T&Cs (No Call Yet)</option>
+            <option>Pending T&Cs</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Profile PDF</label>
+          <div class="upload-zone" onclick="showToast('File picker would open here', 'info')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div class="upload-label">Click to upload PDF</div>
+            <div class="upload-hint">PDF only · Max 50 MB</div>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Or paste PDF link</label>
+          <input class="form-input" type="url" placeholder="https://workdrive.zoho.in/file/…">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" placeholder="Internal notes about this expert…" style="min-height:70px"></textarea>
+        </div>
+
+        <div class="section-divider">Optional Fields</div>
+        <div class="form-group">
+          <label class="form-label">Total Calls Completed</label>
+          <input class="form-input" type="number" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Project ID Added To</label>
+          <input class="form-input" type="text" placeholder="e.g. PRJ-001, PRJ-002">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('addModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExpert()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Save Expert
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PROFILE MODAL
+══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="profileModal" onclick="closeOnBackdrop(event,'profileModal')">
+  <div class="modal profile-modal" id="profileContent"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     EDIT MODAL
+══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="editModal" onclick="closeOnBackdrop(event,'editModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </div>
+      <div>
+        <div class="modal-title" id="editModalTitle">Edit Expert</div>
+        <div class="modal-sub" id="editModalSub">Update the expert's details and save changes</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('editModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editExpertId">
+      <div class="form-grid">
+        <div class="section-divider">Personal Information</div>
+        <div class="form-group">
+          <label class="form-label">First Name <span>*</span></label>
+          <input class="form-input" type="text" id="editFirstName">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name <span>*</span></label>
+          <input class="form-input" type="text" id="editLastName">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Primary Email <span>*</span></label>
+          <input class="form-input" type="email" id="editEmail" oninput="validateEditEmail(this)">
+          <span class="form-error" id="editEmailError" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter a valid email address
+          </span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Primary Phone</label>
+          <input class="form-input" type="text" id="editPhone">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">LinkedIn URL</label>
+          <input class="form-input" type="url" id="editLinkedin" oninput="validateEditURL(this)">
+          <span class="form-error" id="editUrlError" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter a valid URL (must start with https://)
+          </span>
+        </div>
+
+        <div class="section-divider">Location & Classification</div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input class="form-input" type="text" id="editLocation">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Timezone</label>
+          <input class="form-input" type="text" id="editTimezone">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Region <span>*</span></label>
+          <select class="form-select" id="editRegion">
+            <option value="">Select region</option>
+            <option>APAC</option><option>EMEA</option><option>Americas</option><option>Global</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Employment Status</label>
+          <select class="form-select" id="editEmpStatus">
+            <option>Currently Employed</option>
+            <option>Retired</option>
+            <option>Independent</option>
+            <option>Between Roles</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Seniority</label>
+          <select class="form-select" id="editSeniority">
+            <option>C-Level</option><option>VP</option><option>Director</option>
+            <option>Manager</option><option>Head</option><option>Founder</option><option>Senior Manager</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Years of Experience</label>
+          <input class="form-input" type="number" id="editYears" min="0" max="60">
+        </div>
+
+        <div class="section-divider">Professional Details</div>
+        <div class="form-group full">
+          <label class="form-label">Title / Headline <span>*</span></label>
+          <input class="form-input" type="text" id="editTitle">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Primary Sector <span>*</span></label>
+          <select class="form-select" id="editSector">
+            <option value="">Select sector</option>
+            <option>Energy</option><option>Healthcare & Life Sciences</option><option>Industrials</option>
+            <option>Real Estate</option><option>TMT</option><option>Financial Services</option>
+            <option>Consumer</option><option>Infrastructure</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expert Function</label>
+          <select class="form-select" id="editFunc">
+            <option value="">Select function</option>
+            <option>Strategy</option><option>Engineering</option><option>Marketing</option>
+            <option>Finance</option><option>Operations</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company Role</label>
+          <select class="form-select" id="editRole">
+            <option value="">Select role</option>
+            <option>Manufacturer</option><option>Operator</option><option>Service Provider</option>
+            <option>Consultant</option><option>Regulator</option><option>Investor</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Bio</label>
+          <textarea class="form-textarea" id="editBio" style="min-height:90px"></textarea>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Employment History</label>
+          <textarea class="form-textarea" id="editEmployment" style="min-height:80px" placeholder="e.g. Head of Marketing, Signify (2020–present); Director, Philips (2015–2020)"></textarea>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Strength Topics</label>
+          <input class="form-input" type="text" id="editTopics" placeholder="Separate with ·">
+        </div>
+
+        <div class="section-divider">Rates & Status</div>
+        <div class="form-group">
+          <label class="form-label">Currency</label>
+          <select class="form-select" id="editCurrency">
+            <option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>AED</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hourly Rate</label>
+          <input class="form-input" type="number" id="editRate" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">HCMS Classification</label>
+          <select class="form-select" id="editHcms">
+            <option>Excellent</option><option>Good</option><option>Average</option><option>Under Review</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expert Status</label>
+          <select class="form-select" id="editStatus">
+            <option>Active T&Cs (Call Completed)</option>
+            <option>Active T&Cs (No Call Yet)</option>
+            <option>Pending T&Cs</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Link to Profile PDF</label>
+          <input class="form-input" type="url" id="editPdf" placeholder="https://…">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" id="editNotes" style="min-height:70px" placeholder="Internal notes…"></textarea>
+        </div>
+
+        <div class="section-divider">Optional Fields</div>
+        <div class="form-group">
+          <label class="form-label">Total Calls Completed</label>
+          <input class="form-input" type="number" id="editCalls" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Modified</label>
+          <input class="form-input" type="text" id="editLastModified" readonly style="background:var(--surface2);color:var(--text3)">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="updateExpert()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     EXPORT MODAL
+══════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="exportModal" onclick="closeOnBackdrop(event,'exportModal')">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div>
+        <div class="modal-title">Email-Ready Export</div>
+        <div class="modal-sub">Generate a formatted expert list for email outreach</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('exportModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="export-panel">
+        <div class="export-title">3 Experts Selected</div>
+        <div class="export-sub">The following experts will be included in the export:</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px">
+          <span class="badge badge-blue">Syamal Ram Kishore</span>
+          <span class="badge badge-blue">Ravinder Singh</span>
+          <span class="badge badge-blue">Neeraj Agrawal</span>
+        </div>
+        <div class="export-preview">
+&lt;table&gt;<br>
+&nbsp;&nbsp;&lt;tr&gt;&lt;td&gt;<b>Syamal Ram Kishore</b>&lt;/td&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;Co-Founder, Hexawel Healthcare&lt;/td&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;Healthcare&lt;/td&gt;&lt;td&gt;INR 10,000/hr&lt;/td&gt;&lt;/tr&gt;<br>
+&nbsp;&nbsp;&lt;tr&gt;&lt;td&gt;<b>Ravinder Singh</b>&lt;/td&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;SGM, Welspun New Energy&lt;/td&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;Energy&lt;/td&gt;&lt;td&gt;USD 400/hr&lt;/td&gt;&lt;/tr&gt;<br>
+&nbsp;&nbsp;&lt;tr&gt;&lt;td&gt;<b>Neeraj Agrawal</b>&lt;/td&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;Ret. Executive Director, NPCIL&lt;/td&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;Energy&lt;/td&gt;&lt;td&gt;USD 600/hr&lt;/td&gt;&lt;/tr&gt;<br>
+&lt;/table&gt;
+        </div>
+      </div>
+      <div class="form-grid" style="gap:10px">
+        <div class="form-group">
+          <label class="form-label">Export Format</label>
+          <select class="form-select">
+            <option>HTML (Email-ready)</option>
+            <option>Markdown</option>
+            <option>CSV</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Include Fields</label>
+          <select class="form-select">
+            <option>Standard (Name, Title, Rate, LinkedIn)</option>
+            <option>Full Profile</option>
+            <option>Custom…</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('exportModal')">Cancel</button>
+      <button class="btn btn-ghost" onclick="showToast('Copied to clipboard!', 'success'); closeModal('exportModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        Copy HTML
+      </button>
+      <button class="btn btn-primary" onclick="showToast('Export downloaded!', 'success'); closeModal('exportModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Export
+      </button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /#app-shell -->
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────────
+const experts = [
+  { id:'EX-00001', firstName:'Syamal', lastName:'Ram Kishore', email:'syamalram@gmail.com', phone:'+91 9948333067', linkedin:'https://www.linkedin.com/in/syamal-ram-kishore-a3a99319/', location:'Hyderabad, India', timezone:'UTC+5:30 (IST)', region:'APAC', empStatus:'Currently Employed', seniority:'Founder', years:20, title:'Co-Founder & Partner, Hexawel Healthcare', bio:'Syamal Ram Kishore is a Co-Founder & Partner at Hexawel Healthcare since April 2018. Hexawel focuses on nutraceutical and specialty ingredients for pharmaceutical, nutraceutical, and food fortification industries. He leads global business development, B2B partnerships, regulatory coordination, and export market expansion.', employment:'Co-Founder & Partner – Hexawel Healthcare (2018–present)\nGlobal Business Development roles in pharma ingredients and nutraceuticals (prior 15 years)', sector:'Healthcare & Life Sciences', role:'Manufacturer', func:'Strategy', topics:'Nutraceutical & API Commercialization · Global Pharma Business Development · Vitamin & Specialty Ingredient Supply Chain', currency:'INR', rate:10000, hcms:'Excellent', status:'Active T&Cs (Call Completed)', calls:1, pdf:'https://workdrive.zoho.in/file/abc', notes:null, avatar:'SR', grad:'g1' },
+  { id:'EX-00002', firstName:'Ravinder', lastName:'Singh', email:'ravinder.co.in@gmail.com', phone:'(+91)7428080151', linkedin:'https://www.linkedin.com/in/ravinder-singh-251a0974/', location:'Gurgaon, India', timezone:'UTC+5:30 (IST)', region:'APAC', empStatus:'Currently Employed', seniority:'Senior Manager', years:16, title:'Solar PV, Wind & BESS Tech. Professional', bio:'Senior General Manager at Welspun New Energy Ltd. since December 2024. He leads detailed design and engineering for large-scale Solar PV, Wind, and BESS projects, including AC/DC system design, inverter & PCS selection, grid integration, and BoS optimization.', employment:'Senior General Manager – Welspun New Energy Ltd. (2024–present)\nEngineering Manager roles in solar and wind EPC (prior 12 years)', sector:'Energy', role:'Operator', func:'Engineering', topics:'Utility-Scale Solar PV Engineering · Battery Energy Storage Systems (BESS) · Grid Integration & Electrical Design', currency:'USD', rate:400, hcms:'Excellent', status:'Active T&Cs (Call Completed)', calls:4, pdf:null, notes:null, avatar:'RS', grad:'g2' },
+  { id:'EX-00003', firstName:'Siriwat', lastName:'Wangsook', email:'siriwatw@lighting.co.th', phone:'+66 81 689 5845', linkedin:'https://th.linkedin.com/in/siriwat-wangsook-6b2a5550', location:'Bangkok, Thailand', timezone:'UTC+7 (ICT)', region:'APAC', empStatus:'Currently Employed', seniority:'Director', years:29, title:'Business Development Director – Head of Lighting Design Team', bio:'Assistant Director of Business Development at L&E since January 2017. He leads lighting design teams and oversees project execution using Dialux, Relux, AGI32, and 3DMax. Ensures compliance with lux-level standards and coordinates with architects and MEP consultants.', sector:'Industrials', role:'Service Provider', func:'Engineering', topics:'Architectural & Commercial Lighting Design · Lighting Simulation Software · Horticulture & Industrial Lighting Systems', employment:'Assistant Director BD – L&E (2017–present)\nSenior Lighting Designer roles (prior 8 years)', currency:'USD', rate:300, hcms:'Excellent', status:'Active T&Cs (Call Completed)', calls:1, pdf:null, notes:null, avatar:'SW', grad:'g3' },
+  { id:'EX-00004', firstName:'Vinod', lastName:'Alahari', email:'vinod.iimk@gmail.com', phone:'(+60172291981)', linkedin:'https://www.linkedin.com/in/vinodkumaralahari1981/', location:'Kuala Lumpur, Malaysia', timezone:'UTC+8 (SGT)', region:'APAC', empStatus:'Currently Employed', seniority:'Head', years:20, title:'Regional Marketing Leader | ASEAN | Revenue Growth & Market Expansion', bio:'Head of Marketing – Consumer Business, ASEAN at Signify since April 2024. Leads P&L ownership across a 9-country ASEAN region, driving revenue growth, portfolio optimization, pricing strategy, and digital transformation.', sector:'Industrials', role:'Manufacturer', func:'Marketing', topics:'ASEAN Regional Marketing Strategy · Consumer Lighting & Smart Home Commercialization · Go-To-Market & Channel Expansion', employment:'Head of Marketing Consumer ASEAN – Signify (2024–present)\nSenior Marketing Manager – Signify (2019–2024)\nMarketing roles at IIM Kozhikode (prior)', currency:'USD', rate:250, hcms:'Excellent', status:'Active T&Cs (Call Completed)', calls:1, pdf:null, notes:null, avatar:'VA', grad:'g4' },
+  { id:'EX-00005', firstName:'Majdi', lastName:'Baroud', email:'majdi.baroud@novalineadvisory.com', phone:'(+971) 50 843 9456', linkedin:'https://www.linkedin.com/in/majdi-baroud-a4b22b37/', location:'United Arab Emirates', timezone:'UTC+4 (GST)', region:'EMEA', empStatus:'Currently Employed', seniority:'Founder', years:20, title:'Founder | Strategic Retail Advisory | Market Entry & Brand Expansion', bio:'Founder & Managing Director at Novaline Advisory since September 2025. Previously Director – Leasing at Nakheel Malls (2022–2025), achieving 85% occupancy within eight months, and Senior Manager at Emaar Malls Group increasing revenues by 30%.', sector:'Real Estate', role:'Consultant', func:'Strategy', topics:'Luxury Retail Leasing Strategy · GCC Market Entry & Brand Expansion · Retail Asset Repositioning', employment:'Founder & MD – Novaline Advisory (2025–present)\nDirector Leasing – Nakheel Malls (2022–2025)\nSenior Manager – Emaar Malls Group (prior)', currency:'USD', rate:550, hcms:'Excellent', status:'Active T&Cs (Call Completed)', calls:1, pdf:null, notes:null, avatar:'MB', grad:'g5' },
+  { id:'EX-00006', firstName:'Neeraj', lastName:'Agrawal', email:'neerajagrawal1963@gmail.com', phone:'(+91)9869989963', linkedin:'https://www.linkedin.com/in/neeraj-agrawal-72985315b/', location:'Mumbai, India', timezone:'UTC+5:30 (IST)', region:'APAC', empStatus:'Retired', seniority:'C-Level', years:38, title:'Retired Executive Director, Nuclear Power Corporation of India', bio:'Retired Executive Director at NPCIL, leading engineering operations across Control & Instrumentation, Electrical Systems, R&D Engineering Services, Information Technology, and Simulator programs across India\'s nuclear power plants.', sector:'Energy', role:'Operator', func:'Engineering', topics:'Nuclear Power Plant Engineering · Control & Instrumentation Systems · Electrical Systems Design · Regulatory Compliance & IV&V', employment:'Executive Director – Nuclear Power Corporation of India Ltd. NPCIL (retired, 38 years)', currency:'USD', rate:600, hcms:'Excellent', status:'Active T&Cs (Call Completed)', calls:1, pdf:null, notes:null, avatar:'NA', grad:'g1' },
+  { id:'EX-00007', firstName:'Sourabh', lastName:'Kumar', email:'sourabh0331@gmail.com', phone:'(+91)9771502155', linkedin:'https://www.linkedin.com/in/sourabhkumar31/', location:'New Delhi, India', timezone:'UTC+5:30 (IST)', region:'APAC', empStatus:'Currently Employed', seniority:'VP', years:14, title:'Vice President, New Businesses – Solar Manufacturing, BESS & Green Hydrogen', bio:'VP, New Businesses at AMPIN Energy Transition, leading strategic development of solar cell and module manufacturing, green hydrogen initiatives, and energy storage ventures. CFA charterholder and MBA from IIM Kozhikode.', sector:'Energy', role:'Operator', func:'Strategy', topics:'Renewable Energy Strategy · Corporate Finance & M&A · Energy Storage & Green Hydrogen Development', employment:'VP New Businesses – AMPIN Energy Transition (2022–present)\nSenior roles in renewable energy finance and strategy (prior)', currency:'USD', rate:500, hcms:'Excellent', status:'Active T&Cs (Call Completed)', calls:1, pdf:null, notes:null, avatar:'SK', grad:'g2' },
+  { id:'EX-00008', firstName:'Dika', lastName:'Sona', email:'dika.fahruri.sona@gmail.com', phone:'8569085203', linkedin:'http://www.linkedin.com/in/dika-sona-71235864', location:'Jakarta, Indonesia', timezone:'UTC+7 (ICT)', region:'APAC', empStatus:'Currently Employed', seniority:'Manager', years:14, title:'Market Intelligence and Pricing Manager at Signify', bio:'Market Intelligence and Pricing Manager at Signify since 2021. Previously Market Research Manager at PT Polytama Propindo, Market Intelligence Head at PT Cemindo Gemilang, and Market Analyst at Holcim Indonesia.', sector:'Industrials', role:'Manufacturer', func:'Strategy', topics:'Market Intelligence & Research · Pricing Strategy & Analytics · Data Modelling & Visualization', employment:'Market Intelligence & Pricing Manager – Signify (2021–present)\nMarket Research Manager – PT Polytama Propindo\nMarket Intelligence Head – PT Cemindo Gemilang', currency:'USD', rate:250, hcms:'Excellent', status:'Active T&Cs (No Call Yet)', calls:1, pdf:null, notes:null, avatar:'DS', grad:'g3' },
+  { id:'EX-00009', firstName:'Mohammad', lastName:'Karbassian', email:'moe.karbassian41@gmail.com', phone:'+1 919-522-4102', linkedin:'https://www.linkedin.com/in/moe-karbassian-a137642b/', location:'South Carolina, USA', timezone:'UTC-5 (EST)', region:'Americas', empStatus:'Independent', seniority:'Manager', years:28, title:'Sr. Area Manager, EV Battery module and system lines @ BorgWarner', bio:'Senior Area Manager at BorgWarner with expertise in EV battery module and system lines. 28+ years in manufacturing operations including Electrolux, Colgate-Palmolive, and International Vitamin Corporation.', sector:'Industrials', role:'Regulator', func:'Other', topics:'Manufacturing Operations · Process Improvement · EV Battery Systems · Lean Manufacturing', employment:'Senior Area Manager – BorgWarner (current)\nManufacturing roles at Electrolux, Colgate-Palmolive, International Vitamin Corporation (28 years total)', currency:null, rate:null, hcms:null, status:'Active T&Cs (No Call Yet)', calls:0, pdf:null, notes:null, avatar:'MK', grad:'g4' },
+  { id:'EX-00010', firstName:'Alessandro', lastName:'Locatello', email:'alessandro.locatello@gmail.com', phone:null, linkedin:'https://www.linkedin.com/in/alessandro-locatello-ba8115172', location:'Eindhoven, Netherlands', timezone:'UTC+1 (CET)', region:'EMEA', empStatus:'Currently Employed', seniority:'Manager', years:6, title:'R&D Automotive Engineer & Process Engineer at DAF Trucks', bio:'Process Engineer, Global Engine Integration Development at DAF Trucks NV since 2025. Previously Simulation Engineer Fuel Efficiency and Thermodynamics at DAF Trucks NV and Vehicle Attribute Lead at Lightyear.', sector:'TMT', role:'Consultant', func:'Engineering', topics:'Automotive Engineering · Thermal Systems Simulation · Process Engineering · EV Powertrain Development', employment:'Process Engineer – DAF Trucks NV (2025–present)\nSimulation Engineer Fuel Efficiency – DAF Trucks NV (2022–2025)\nVehicle Attribute Lead – Lightyear (2021–2022)', currency:null, rate:null, hcms:null, status:'Active T&Cs (No Call Yet)', calls:0, pdf:null, notes:null, avatar:'AL', grad:'g5' },
+];
+
+const sectorBadge = { 'Energy':'badge-amber', 'Healthcare & Life Sciences':'badge-green', 'Industrials':'badge-blue', 'Real Estate':'badge-purple', 'TMT':'badge-teal', 'Financial Services':'badge-gray' };
+const funcBadge   = { 'Strategy':'badge-blue', 'Engineering':'badge-amber', 'Marketing':'badge-purple', 'Other':'badge-gray' };
+
+let selectedIds = new Set();
+
+function getStatusBadge(s) {
+  if (s.includes('Call Completed')) return 'badge-green';
+  if (s.includes('No Call Yet')) return 'badge-amber';
+  return 'badge-gray';
+}
+
+function formatRate(e) {
+  if (!e.rate) return '<span style="color:var(--text3)">—</span>';
+  return `<span class="rate-cell">${e.currency === 'INR' ? '₹' : '$'}${e.rate.toLocaleString()}<span style="font-size:11px;font-weight:400;color:var(--text3)">/hr</span></span>`;
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('expertTbody');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <div class="empty-title">No experts found</div>
+      <div class="empty-text">Try adjusting your search or filters</div>
+    </div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(e => `
+    <tr class="${selectedIds.has(e.id) ? 'selected' : ''}" onclick="rowClick(event,'${e.id}')">
+      <td onclick="event.stopPropagation()">
+        <input type="checkbox" class="checkbox" ${selectedIds.has(e.id) ? 'checked' : ''} onchange="toggleRow('${e.id}',this)">
+      </td>
+      <td>
+        <div class="expert-cell">
+          <div class="expert-avatar ${e.grad}">${e.avatar}</div>
+          <div>
+            <div class="expert-name">${e.firstName} ${e.lastName}</div>
+            <div class="expert-id">${e.id}</div>
+          </div>
+        </div>
+      </td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--text2)" title="${e.title}">${e.title}</td>
+      <td><span class="badge ${sectorBadge[e.sector]||'badge-gray'}">${e.sector}</span></td>
+      <td><span class="badge ${funcBadge[e.func]||'badge-gray'}">${e.func}</span></td>
+      <td><span class="badge badge-gray">${e.region}</span></td>
+      <td><span class="badge ${getStatusBadge(e.status)}" style="font-size:11px"><span class="status-dot"></span> ${e.status.replace('Active T&Cs (','').replace(')','')}</span></td>
+      <td>${formatRate(e)}</td>
+      <td style="font-size:13px;color:var(--text2);text-align:center">${e.calls}</td>
+      <td onclick="event.stopPropagation()">
+        <div class="row-actions">
+          <button class="icon-btn" title="View profile" onclick="openProfile('${e.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="icon-btn" title="Edit" onclick="event.stopPropagation();openEditModal('${e.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="icon-btn" title="Open LinkedIn" onclick="window.open('${e.linkedin}','_blank')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  document.getElementById('tableCount').textContent = `${data.length} record${data.length===1?'':'s'}`;
+  document.getElementById('pageInfo').textContent = `Showing 1–${data.length} of ${data.length} expert${data.length===1?'':'s'}`;
+}
+
+function filterExperts() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const sector = document.getElementById('sectorFilter').value;
+  const region = document.getElementById('regionFilter').value;
+  const status = document.getElementById('statusFilter').value;
+  const emp    = document.getElementById('empFilter').value;
+
+  const filtered = experts.filter(e => {
+    const text = `${e.firstName} ${e.lastName} ${e.title} ${e.sector} ${e.func} ${e.location} ${e.linkedin} ${e.topics}`.toLowerCase();
+    return (!q || text.includes(q))
+      && (!sector || e.sector === sector)
+      && (!region || e.region === region)
+      && (!status || e.status === status)
+      && (!emp    || e.empStatus === emp);
+  });
+  renderTable(filtered);
+}
+
+function toggleChip(chip, selectId, value) {
+  const el = document.getElementById(`chip-${chip}`);
+  const sel = document.getElementById(selectId);
+  if (el.classList.contains('active')) {
+    el.classList.remove('active');
+    sel.value = '';
+  } else {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    sel.value = value;
+  }
+  filterExperts();
+}
+
+function toggleRow(id, cb) {
+  if (cb.checked) selectedIds.add(id); else selectedIds.delete(id);
+  updateSelectedUI();
+  filterExperts();
+}
+
+function toggleAll(cb) {
+  const filtered = getFiltered();
+  filtered.forEach(e => { if (cb.checked) selectedIds.add(e.id); else selectedIds.delete(e.id); });
+  updateSelectedUI();
+  filterExperts();
+}
+
+function rowClick(event, id) {
+  if (event.target.tagName === 'INPUT') return;
+  openProfile(id);
+}
+
+function updateSelectedUI() {
+  const n = selectedIds.size;
+  const sa = document.getElementById('selectedActions');
+  sa.style.display = n > 0 ? 'flex' : 'none';
+  document.getElementById('selectedCount').textContent = `${n} selected`;
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  updateSelectedUI();
+  filterExperts();
+}
+
+function getFiltered() {
+  return experts;
+}
+
+// ─── MODALS ────────────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnBackdrop(e, id) { if (e.target === e.currentTarget) closeModal(id); }
+
+function openAddModal() { openModal('addModal'); }
+function openExportModal() { openModal('exportModal'); }
+
+function openEditModal(id) {
+  const e = experts.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById('editExpertId').value = e.id;
+  document.getElementById('editModalTitle').textContent = `Edit — ${e.firstName} ${e.lastName}`;
+  document.getElementById('editModalSub').textContent = `${e.id} · Last modified: ${new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`;
+  document.getElementById('editFirstName').value = e.firstName;
+  document.getElementById('editLastName').value = e.lastName;
+  document.getElementById('editEmail').value = e.email;
+  document.getElementById('editPhone').value = e.phone || '';
+  document.getElementById('editLinkedin').value = e.linkedin || '';
+  document.getElementById('editLocation').value = e.location || '';
+  document.getElementById('editTimezone').value = e.timezone || '';
+  document.getElementById('editYears').value = e.years || '';
+  document.getElementById('editTitle').value = e.title || '';
+  document.getElementById('editBio').value = e.bio || '';
+  document.getElementById('editEmployment').value = e.employment || '';
+  document.getElementById('editTopics').value = e.topics || '';
+  document.getElementById('editRate').value = e.rate || '';
+  document.getElementById('editPdf').value = e.pdf || '';
+  document.getElementById('editNotes').value = e.notes || '';
+  document.getElementById('editCalls').value = e.calls || 0;
+  document.getElementById('editLastModified').value = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  // Set selects
+  ['editRegion','editEmpStatus','editSeniority','editSector','editFunc','editRole','editCurrency','editHcms','editStatus'].forEach(selId => {
+    const sel = document.getElementById(selId);
+    const map = { editRegion:e.region, editEmpStatus:e.empStatus, editSeniority:e.seniority, editSector:e.sector, editFunc:e.func, editRole:e.role, editCurrency:e.currency||'USD', editHcms:e.hcms||'Excellent', editStatus:e.status };
+    if (map[selId]) { for (let opt of sel.options) { if (opt.value === map[selId] || opt.text === map[selId]) { sel.value = opt.value; break; } } }
+  });
+  openModal('editModal');
+}
+
+function updateExpert() {
+  const id = document.getElementById('editExpertId').value;
+  const firstName = document.getElementById('editFirstName').value.trim();
+  const lastName  = document.getElementById('editLastName').value.trim();
+  const email     = document.getElementById('editEmail').value.trim();
+  if (!firstName || !lastName || !email) { showToast('Please fill in all required fields', 'error'); return; }
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!emailValid) { showToast('Please enter a valid email address', 'error'); return; }
+  const idx = experts.findIndex(x => x.id === id);
+  if (idx === -1) return;
+  experts[idx] = {
+    ...experts[idx],
+    firstName,
+    lastName,
+    email,
+    phone:      document.getElementById('editPhone').value.trim() || null,
+    linkedin:   document.getElementById('editLinkedin').value.trim() || experts[idx].linkedin,
+    location:   document.getElementById('editLocation').value.trim(),
+    timezone:   document.getElementById('editTimezone').value.trim(),
+    region:     document.getElementById('editRegion').value,
+    empStatus:  document.getElementById('editEmpStatus').value,
+    seniority:  document.getElementById('editSeniority').value,
+    years:      parseInt(document.getElementById('editYears').value) || experts[idx].years,
+    title:      document.getElementById('editTitle').value.trim(),
+    bio:        document.getElementById('editBio').value.trim(),
+    employment: document.getElementById('editEmployment').value.trim() || null,
+    topics:     document.getElementById('editTopics').value.trim(),
+    sector:     document.getElementById('editSector').value || experts[idx].sector,
+    func:       document.getElementById('editFunc').value || experts[idx].func,
+    role:       document.getElementById('editRole').value || experts[idx].role,
+    currency:   document.getElementById('editCurrency').value,
+    rate:       parseFloat(document.getElementById('editRate').value) || null,
+    hcms:       document.getElementById('editHcms').value,
+    status:     document.getElementById('editStatus').value,
+    pdf:        document.getElementById('editPdf').value.trim() || null,
+    notes:      document.getElementById('editNotes').value.trim() || null,
+    calls:      parseInt(document.getElementById('editCalls').value) || 0,
+  };
+  closeModal('editModal');
+  filterExperts();
+  showToast(`${firstName} ${lastName} updated successfully`, 'success');
+}
+
+function validateEditEmail(input) {
+  const err = document.getElementById('editEmailError');
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+  if (input.value && !valid) { input.classList.add('error'); err.style.display='flex'; }
+  else { input.classList.remove('error'); err.style.display='none'; }
+}
+
+function validateEditURL(input) {
+  const err = document.getElementById('editUrlError');
+  const valid = !input.value || input.value.startsWith('http');
+  if (input.value && !valid) { input.classList.add('error'); err.style.display='flex'; }
+  else { input.classList.remove('error'); err.style.display='none'; }
+}
+
+function saveExpert() {
+  const firstName = document.getElementById('addFirstName').value.trim();
+  const email     = document.getElementById('addEmail').value.trim();
+  const linkedin  = document.getElementById('addLinkedin').value.trim();
+  if (!firstName) { showToast('Please fill in required fields', 'error'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address', 'error'); return; }
+  // Duplicate check
+  const dupEmail = experts.find(e => e.email.toLowerCase() === email.toLowerCase());
+  const dupLI    = linkedin && experts.find(e => e.linkedin && e.linkedin.toLowerCase() === linkedin.toLowerCase());
+  if (dupEmail || dupLI) {
+    const dup = dupEmail || dupLI;
+    document.getElementById('dupWarning').style.display = 'flex';
+    document.querySelector('.dup-link').textContent = `${dup.firstName} ${dup.lastName} (${dup.id})`;
+    showToast('Duplicate email or LinkedIn URL detected', 'error');
+    return;
+  }
+  const newId = `EX-${String(experts.length + 1).padStart(5,'0')}`;
+  const initials = firstName[0] + (document.querySelector('[placeholder="e.g. Patel"]')?.value?.[0] || 'X');
+  experts.push({
+    id: newId,
+    firstName,
+    lastName: document.querySelector('[placeholder="e.g. Patel"]')?.value?.trim() || '',
+    email,
+    phone: document.querySelector('[placeholder="+1 555 000 0000"]')?.value?.trim() || null,
+    linkedin: linkedin || null,
+    location: document.querySelector('[placeholder="City, Country"]')?.value?.trim() || '',
+    timezone: document.querySelector('[placeholder="UTC+5:30 (IST)"]')?.value?.trim() || '',
+    region: document.getElementById('addRegion')?.value || 'APAC',
+    empStatus: document.getElementById('addEmpStatus')?.value || 'Currently Employed',
+    seniority: document.getElementById('addSeniority')?.value || 'Manager',
+    years: parseInt(document.querySelector('[placeholder="e.g. 15"]')?.value) || 0,
+    title: document.querySelector('[placeholder="e.g. Head of Renewable Energy Strategy, APAC"]')?.value?.trim() || '',
+    bio: document.querySelectorAll('.form-textarea')[0]?.value?.trim() || '',
+    employment: document.querySelectorAll('.form-textarea')[1]?.value?.trim() || null,
+    topics: document.querySelector('[placeholder="e.g. Solar PV Engineering · Battery Storage · Grid Integration (separate with ·)"]')?.value?.trim() || '',
+    sector: document.getElementById('addSector')?.value || '',
+    func: document.getElementById('addFunc')?.value || 'Other',
+    role: document.getElementById('addRole')?.value || '',
+    currency: document.getElementById('addCurrency')?.value || 'USD',
+    rate: parseFloat(document.querySelector('[placeholder="e.g. 400"]')?.value) || null,
+    hcms: document.getElementById('addHcms')?.value || 'Excellent',
+    status: document.getElementById('addStatus')?.value || 'Pending T&Cs',
+    pdf: document.querySelector('[placeholder="https://workdrive.zoho.in/file/…"]')?.value?.trim() || null,
+    notes: document.querySelectorAll('.form-textarea')[2]?.value?.trim() || null,
+    calls: parseInt(document.querySelector('[placeholder="0"]')?.value) || 0,
+    avatar: initials.toUpperCase(),
+    grad: ['g1','g2','g3','g4','g5'][experts.length % 5],
+  });
+  closeModal('addModal');
+  filterExperts();
+  showToast(`Expert "${firstName}" added successfully!`, 'success');
+  document.getElementById('navBadge').textContent = experts.length;
+}
+
+function openProfile(id) {
+  const e = experts.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById('profileContent').innerHTML = `
+    <div class="profile-hero">
+      <button class="modal-close" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.1);color:white;" onclick="closeModal('profileModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="profile-hero-inner">
+        <div class="profile-avatar">${e.avatar}</div>
+        <div class="profile-hero-info">
+          <div class="profile-hero-name">${e.firstName} ${e.lastName}</div>
+          <div class="profile-hero-title">${e.title}</div>
+          <div class="profile-hero-tags">
+            <span class="hero-tag">${e.id}</span>
+            <span class="hero-tag">${e.sector}</span>
+            <span class="hero-tag">${e.region}</span>
+            <span class="hero-tag">${e.seniority}</span>
+            <span class="hero-tag">${e.years} yrs exp</span>
+          </div>
+        </div>
+        <div class="profile-hero-actions">
+          <button class="btn btn-ghost" style="background:rgba(255,255,255,0.1);color:white;border-color:rgba(255,255,255,0.2)" onclick="window.open('${e.linkedin}','_blank')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </button>
+          <button class="btn btn-primary" onclick="closeModal('profileModal');openEditModal('${e.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="profile-section">
+        <div class="profile-section-title">Contact & Location</div>
+        <div class="profile-grid">
+          <div class="profile-field"><div class="profile-field-label">Email</div><div class="profile-field-value" style="font-size:12.5px">${e.email}</div></div>
+          <div class="profile-field"><div class="profile-field-label">Phone</div><div class="profile-field-value" style="font-size:12.5px">${e.phone||'—'}</div></div>
+          <div class="profile-field"><div class="profile-field-label">Location</div><div class="profile-field-value" style="font-size:12.5px">${e.location}</div></div>
+          <div class="profile-field"><div class="profile-field-label">Timezone</div><div class="profile-field-value" style="font-size:12.5px">${e.timezone}</div></div>
+          <div class="profile-field"><div class="profile-field-label">Region</div><div class="profile-field-value">${e.region}</div></div>
+          <div class="profile-field"><div class="profile-field-label">Emp. Status</div><div class="profile-field-value" style="font-size:12.5px">${e.empStatus}</div></div>
+        </div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-title">Professional</div>
+        <div class="profile-grid">
+          <div class="profile-field"><div class="profile-field-label">Sector</div><div class="profile-field-value" style="font-size:12.5px">${e.sector}</div></div>
+          <div class="profile-field"><div class="profile-field-label">Function</div><div class="profile-field-value">${e.func}</div></div>
+          <div class="profile-field"><div class="profile-field-label">Company Role</div><div class="profile-field-value">${e.role||'—'}</div></div>
+          <div class="profile-field"><div class="profile-field-label">Hourly Rate</div><div class="profile-field-value">${e.rate ? `${e.currency} ${e.rate.toLocaleString()}/hr` : '—'}</div></div>
+          <div class="profile-field"><div class="profile-field-label">HCMS</div><div class="profile-field-value">${e.hcms||'—'}</div></div>
+          <div class="profile-field"><div class="profile-field-label">Total Calls</div><div class="profile-field-value">${e.calls}</div></div>
+        </div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-title">Biography</div>
+        <div class="profile-bio">${e.bio}</div>
+      </div>
+      ${e.employment ? `<div class="profile-section">
+        <div class="profile-section-title">Employment History</div>
+        <div class="profile-bio" style="white-space:pre-line">${e.employment}</div>
+      </div>` : ''}
+      <div class="profile-section">
+        <div class="profile-section-title">Strength Topics</div>
+        <div>${(e.topics||'').split('·').map(t => `<span class="strength-pill">${t.trim()}</span>`).join('')}</div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-section-title">Status & Files</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <span class="badge ${getStatusBadge(e.status)}" style="font-size:12.5px">${e.status}</span>
+          ${e.pdf ? `<a class="linkedin-btn" href="${e.pdf}" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> View Profile PDF</a>` : '<span style="font-size:12.5px;color:var(--text3)">No PDF attached</span>'}
+        </div>
+        ${e.notes ? `<div style="margin-top:10px;padding:10px;background:var(--surface2);border-radius:8px;font-size:13px;color:var(--text2);border:1px solid var(--border)"><span style="font-weight:600;color:var(--text)">Notes: </span>${e.notes}</div>` : ''}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('profileModal')">Close</button>
+      <button class="btn btn-ghost" onclick="selectedIds.add('${e.id}'); updateSelectedUI(); closeModal('profileModal'); showToast('${e.firstName} added to selection', 'info')">Add to Export</button>
+      <button class="btn btn-primary" onclick="closeModal('profileModal');openEditModal('${e.id}')">Edit Expert</button>
+    </div>
+  `;
+  openModal('profileModal');
+}
+
+// ─── FORM VALIDATION ───────────────────────────────────────────────────────────
+function validateEmail(input) {
+  const err = document.getElementById('emailError');
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+  if (input.value && !valid) { input.classList.add('error'); err.style.display='flex'; }
+  else { input.classList.remove('error'); err.style.display='none'; }
+}
+
+function validateURL(input) {
+  const err = document.getElementById('urlError');
+  const valid = !input.value || input.value.startsWith('http');
+  if (input.value && !valid) { input.classList.add('error'); err.style.display='flex'; }
+  else { input.classList.remove('error'); err.style.display='none'; }
+}
+
+let dupShown = false;
+function checkDuplicate() {
+  const name = document.getElementById('addFirstName').value.toLowerCase();
+  const email = document.getElementById('addEmail').value.toLowerCase().trim();
+  const linkedin = document.getElementById('addLinkedin').value.toLowerCase().trim();
+  const dup = document.getElementById('dupWarning');
+  const dupLink = document.querySelector('.dup-link');
+  const found = experts.find(e =>
+    (email && e.email.toLowerCase() === email) ||
+    (linkedin && e.linkedin && e.linkedin.toLowerCase() === linkedin) ||
+    name.includes('ravinder') || name.includes('syamal')
+  );
+  if (found) {
+    dupLink.textContent = `${found.firstName} ${found.lastName} (${found.id})`;
+    dup.style.display='flex';
+  } else {
+    dup.style.display='none';
+  }
+}
+
+// ─── TOAST ─────────────────────────────────────────────────────────────────────
+function showToast(message, type = 'info') {
+  const icons = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+    error:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  };
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `${icons[type]||icons.info} ${message}`;
+  container.appendChild(toast);
+  requestAnimationFrame(() => { requestAnimationFrame(() => toast.classList.add('show')); });
+  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────────
+renderTable(experts);
+
+// ─── LANDING PAGE LOGIC ────────────────────────────────────────────────────────
+function enterApp() {
+  const landing = document.getElementById('landing');
+  const shell   = document.getElementById('app-shell');
+  landing.classList.add('exit');
+  shell.classList.add('visible');
+  setTimeout(() => {
+    landing.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 650);
+}
+
+function scrollToFeatures() {
+  document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+}
+
+// scroll-triggered animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.l-anim').forEach(el => observer.observe(el));
+
+// prevent app scrollbar from showing while landing is displayed
+document.body.style.overflow = 'hidden';
+document.getElementById('landing').addEventListener('scroll', () => {}, { passive: true });
+// allow landing page itself to scroll
+document.getElementById('landing').style.overflowY = 'auto';
+document.body.style.overflow = 'hidden';
+</script>
+</body>
+</html>

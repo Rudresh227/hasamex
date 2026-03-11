@@ -1,0 +1,72 @@
+# --- Environment / Secrets ---
+.env
+.env.local
+.env.*.local
+venv/
+env/
+ENV/
+.venv/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Database / Storage ---
+*.db
+*.sqlite3
+*.sqlite
+# If you have local uploads or media folders:
+# uploads/
+# instance/
+
+# --- Testing & Coverage ---
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+htmlcov/
+.hypothesis/
+
+# --- IDEs / Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# --- Operating System ---
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+# Only ignore the override if you use it for local development only
+# docker-compose.override.yml
