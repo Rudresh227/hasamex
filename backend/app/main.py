@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 
-from app.routers import experts
+from app.routers import experts, lookups
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -27,3 +27,4 @@ async def health_check():
     return {"status": "healthy"}
 
 app.include_router(experts.router, prefix=f"{settings.API_V1_STR}/experts", tags=["experts"])
+app.include_router(lookups.router, prefix=f"{settings.API_V1_STR}/lookups", tags=["lookups"])

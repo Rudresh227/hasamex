@@ -24,6 +24,7 @@ class Expert(Base):
     __tablename__ = "experts"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    serial_number: Mapped[Optional[int]] = mapped_column(Integer, unique=True)
     expert_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     
     salutation: Mapped[Optional[str]] = mapped_column(String)
@@ -72,6 +73,12 @@ class Expert(Base):
     rates: Mapped[List["ExpertRate"]] = relationship(back_populates="expert", cascade="all, delete-orphan")
     projects: Mapped[List["ExpertProject"]] = relationship(back_populates="expert", cascade="all, delete-orphan")
     files: Mapped[List["ExpertFile"]] = relationship(back_populates="expert", cascade="all, delete-orphan")
+    
+    sector: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[sector_id])
+    region: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[region_id])
+    status: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[expert_status_id])
+    function: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[function_id])
+    employment_status: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[employment_status_id])
 
 class ExpertEmployment(Base):
     __tablename__ = "expert_employment"

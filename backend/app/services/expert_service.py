@@ -1,10 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_, func
+from sqlalchemy import select, or_, func, join
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
 import uuid
+from fastapi import HTTPException
+from fastapi import status
 
-from app.models.expert import Expert, ExpertEmployment, ExpertRate, ExpertProject
+from app.models.expert import Expert, ExpertEmployment, ExpertRate, ExpertProject, LookupValue
 from app.schemas.expert import ExpertCreate, ExpertUpdate
 
 class ExpertService:
@@ -15,17 +17,28 @@ class ExpertService:
         limit: int = 100, 
         search: Optional[str] = None,
         sector_id: Optional[int] = None,
+        sector_name: Optional[str] = None,
         region_id: Optional[int] = None,
-        status_id: Optional[int] = None
-    ) -> List[Expert]:
+        status_id: Optional[int] = None,
+        employment_status_id: Optional[int] = None,
+        function_id: Optional[int] = None
+    ) -> dict:
         query = select(Expert).where(Expert.is_deleted == False)
         
         if sector_id:
             query = query.where(Expert.sector_id == sector_id)
+        if sector_name:
+            query = query.join(LookupValue, Expert.sector_id == LookupValue.id).where(
+                LookupValue.value.ilike(f"%{sector_name}%")
+            )
         if region_id:
             query = query.where(Expert.region_id == region_id)
         if status_id:
             query = query.where(Expert.expert_status_id == status_id)
+        if employment_status_id:
+            query = query.where(Expert.employment_status_id == employment_status_id)
+        if function_id:
+            query = query.where(Expert.function_id == function_id)
             
         if search:
             # Simple search for now, will upgrade to full-text search later
@@ -37,15 +50,33 @@ class ExpertService:
             )
             query = query.where(search_filter)
             
+        # Get total count for pagination
+        count_query = select(func.count()).select_from(query.subquery())
+        count_result = await db.execute(count_query)
+        total = count_result.scalar_one()
+
+        # Execute main query
         query = query.offset(skip).limit(limit).options(
             selectinload(Expert.employment_history),
             selectinload(Expert.rates),
             selectinload(Expert.projects),
-            selectinload(Expert.files)
+            selectinload(Expert.files),
+            selectinload(Expert.sector),
+            selectinload(Expert.region),
+            selectinload(Expert.status),
+            selectinload(Expert.function),
+            selectinload(Expert.employment_status)
         )
         
         result = await db.execute(query)
-        return result.scalars().all()
+        items = result.scalars().all()
+        
+        return {
+            "items": items,
+            "total": total,
+            "skip": skip,
+            "limit": limit
+        }
 
     @staticmethod
     async def get_expert(db: AsyncSession, expert_id: uuid.UUID) -> Optional[Expert]:
@@ -53,14 +84,42 @@ class ExpertService:
             selectinload(Expert.employment_history),
             selectinload(Expert.rates),
             selectinload(Expert.projects),
-            selectinload(Expert.files)
+            selectinload(Expert.files),
+            selectinload(Expert.sector),
+            selectinload(Expert.region),
+            selectinload(Expert.status),
+            selectinload(Expert.function),
+            selectinload(Expert.employment_status)
         )
         result = await db.execute(query)
         return result.scalar_one_or_none()
 
     @staticmethod
     async def create_expert(db: AsyncSession, expert_in: ExpertCreate) -> Expert:
+        # Check for duplicates within the transaction
+        conflicts = await ExpertService.check_duplicates(
+            db, 
+            email=expert_in.primary_email, 
+            linkedin=str(expert_in.linkedin_url) if expert_in.linkedin_url else None
+        )
+        if conflicts:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    "message": "Duplicate expert detected",
+                    "conflicts": [{"id": str(e.id), "name": f"{e.first_name} {e.last_name}"} for e in conflicts]
+                }
+            )
+        
         expert_data = expert_in.model_dump(exclude={"employment_history", "rates", "projects"})
+        
+        # Auto-assign serial number if not provided
+        if not expert_data.get('serial_number'):
+            max_serial_stmt = select(func.coalesce(func.max(Expert.serial_number), 0))
+            max_result = await db.execute(max_serial_stmt)
+            next_serial = max_result.scalar_one() + 1
+            expert_data['serial_number'] = next_serial
+        
         db_expert = Expert(**expert_data)
         
         # Add employment history
@@ -77,7 +136,12 @@ class ExpertService:
             
         db.add(db_expert)
         await db.commit()
-        await db.refresh(db_expert)
+        
+        # Refresh with proper relationship loading
+        await db.refresh(
+            db_expert, 
+            ["employment_history", "rates", "projects", "files", "sector", "region", "status", "function", "employment_status"]
+        )
         return db_expert
 
     @staticmethod
@@ -87,6 +151,11 @@ class ExpertService:
             return None
             
         update_data = expert_in.model_dump(exclude_unset=True)
+        
+        # Handle phone field specifically - ensure empty strings are treated as None for db
+        if 'primary_phone' in update_data and update_data['primary_phone'] == '':
+            update_data['primary_phone'] = None
+            
         for field, value in update_data.items():
             setattr(db_expert, field, value)
             

@@ -59,6 +59,12 @@ async def seed_from_excel(file_path: str):
     headers = [c.value for c in ws[1]]
     
     async with async_session() as db:
+        # Get the next available serial number
+        from sqlalchemy import func
+        max_serial_stmt = select(func.coalesce(func.max(Expert.serial_number), 0))
+        max_result = await db.execute(max_serial_stmt)
+        next_serial = max_result.scalar_one() + 1
+        
         for row in ws.iter_rows(min_row=2, values_only=True):
             data = {COLUMN_MAP[h]: v for h, v in zip(headers, row) if h in COLUMN_MAP}
             
@@ -86,12 +92,14 @@ async def seed_from_excel(file_path: str):
             
             db_expert = Expert(
                 **expert_data,
+                serial_number=next_serial,  # Assign serial number
                 region_id=region_id,
                 employment_status_id=emp_status_id,
                 sector_id=sector_id,
                 function_id=func_id,
                 expert_status_id=exp_status_id
             )
+            next_serial += 1  # Increment for next expert
             
             # Handle rate if present in a messy way (simplified for now)
             # Find the Rate column if it exists as 'Hourly Rate' and 'Currency'

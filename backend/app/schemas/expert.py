@@ -85,6 +85,7 @@ class ExpertFile(ExpertFileBase):
         from_attributes = True
 
 class ExpertBase(BaseModel):
+    serial_number: Optional[int] = None
     expert_id: str
     salutation: Optional[str] = None
     first_name: str
@@ -93,7 +94,7 @@ class ExpertBase(BaseModel):
     secondary_email: Optional[EmailStr] = None
     primary_phone: Optional[str] = None
     secondary_phone: Optional[str] = None
-    linkedin_url: Optional[HttpUrl] = None
+    linkedin_url: Optional[str] = None
     location: Optional[str] = None
     timezone: Optional[str] = None
     region_id: Optional[int] = None
@@ -119,6 +120,7 @@ class ExpertCreate(ExpertBase):
     projects: List[ExpertProjectCreate] = []
 
 class ExpertUpdate(BaseModel):
+    serial_number: Optional[int] = None
     expert_id: Optional[str] = None
     salutation: Optional[str] = None
     first_name: Optional[str] = None
@@ -127,7 +129,7 @@ class ExpertUpdate(BaseModel):
     secondary_email: Optional[EmailStr] = None
     primary_phone: Optional[str] = None
     secondary_phone: Optional[str] = None
-    linkedin_url: Optional[HttpUrl] = None
+    linkedin_url: Optional[str] = None
     location: Optional[str] = None
     timezone: Optional[str] = None
     region_id: Optional[int] = None
@@ -157,6 +159,17 @@ class Expert(ExpertBase):
     rates: List[ExpertRate] = []
     projects: List[ExpertProject] = []
     files: List[ExpertFile] = []
+    sector: Optional[LookupValue] = None
+    region: Optional[LookupValue] = None
+    status: Optional[LookupValue] = None
+    function: Optional[LookupValue] = None
+    employment_status: Optional[LookupValue] = None
 
     class Config:
         from_attributes = True
+
+class ExpertListResponse(BaseModel):
+    items: List[Expert]
+    total: int
+    skip: int
+    limit: int
