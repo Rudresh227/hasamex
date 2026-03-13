@@ -18,7 +18,11 @@ export default function AddExpertPage() {
   const mutation = useMutation({
     mutationFn: async (data: ExpertFormData & { file?: File }) => {
       const { file, ...expertData } = data;
-      const expert = await expertService.create(expertData);
+      // Filter out null values and convert to undefined for API compatibility
+      const cleanedData = Object.fromEntries(
+        Object.entries(expertData).filter(([_, value]) => value !== null)
+      );
+      const expert = await expertService.create(cleanedData);
       if (file && expert.id) {
         try {
           await expertService.uploadExpertFile(expert.id, file);

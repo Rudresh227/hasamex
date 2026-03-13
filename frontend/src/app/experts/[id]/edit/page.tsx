@@ -22,7 +22,13 @@ export default function EditExpertPage() {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: ExpertFormData) => expertService.update(id as string, data),
+    mutationFn: (data: ExpertFormData) => {
+      // Filter out null values and convert to undefined for API compatibility
+      const cleanedData = Object.fromEntries(
+        Object.entries(data).filter(([_, value]) => value !== null)
+      );
+      return expertService.update(id as string, cleanedData);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['experts'] });
       queryClient.invalidateQueries({ queryKey: ['expert', id] });
