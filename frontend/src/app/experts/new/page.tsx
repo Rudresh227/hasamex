@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { useToast } from '@/components/Toast';
 import ExpertForm, { ExpertFormData } from '@/components/ExpertForm';
 import { Expert } from '@/types/expert';
+import AuthGuard from '@/components/AuthGuard';
 
 export default function AddExpertPage() {
   const router = useRouter();
@@ -49,11 +50,12 @@ export default function AddExpertPage() {
   });
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="max-w-3xl mx-auto py-8"
-    >
+    <AuthGuard>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-3xl mx-auto py-8"
+      >
       <div className="flex items-center justify-between mb-8">
         <Link href="/experts" className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-black uppercase tracking-widest transition-colors group">
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
@@ -85,5 +87,6 @@ export default function AddExpertPage() {
         />
       </div>
     </motion.div>
+    </AuthGuard>
   );
 }

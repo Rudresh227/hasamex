@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import AuthGuard from '@/components/AuthGuard';
 
 export default function ExpertProfilePage() {
   const { id } = useParams();
@@ -40,7 +41,8 @@ export default function ExpertProfilePage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-12">
+    <AuthGuard>
+      <div className="max-w-5xl mx-auto space-y-6 pb-12">
       <Link href="/experts" className="flex items-center gap-2 text-[var(--text3)] hover:text-[var(--navy)] transition-colors text-sm font-medium group mb-4">
         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
         Back to Database
@@ -203,5 +205,6 @@ export default function ExpertProfilePage() {
         </div>
       </div>
     </div>
+    </AuthGuard>
   );
 }

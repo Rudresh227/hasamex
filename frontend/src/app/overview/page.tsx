@@ -12,6 +12,7 @@ import {
   Clock
 } from 'lucide-react';
 import Link from 'next/link';
+import AuthGuard from '@/components/AuthGuard';
 
 export default function DashboardOverview() {
   const activities = [
@@ -21,11 +22,12 @@ export default function DashboardOverview() {
   ];
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-8"
-    >
+    <AuthGuard>
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-8"
+      >
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold font-jakarta tracking-tight text-zinc-900">System Overview</h1>
@@ -114,5 +116,6 @@ export default function DashboardOverview() {
         </div>
       </div>
     </motion.div>
+    </AuthGuard>
   );
 }

@@ -7,8 +7,45 @@ import {
   ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 export default function LandingPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    setIsAuthenticated(loggedIn);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      window.location.replace('/login');
+    }
+  }, [mounted, isAuthenticated]);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-gray-200 border-t-transparent rounded-full animate-spin" />
+          <p className="mt-4 text-sm text-gray-500 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-gray-200 border-t-transparent rounded-full animate-spin" />
+          <p className="mt-4 text-sm text-gray-500 font-medium">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="bg-white text-black font-sans selection:bg-black selection:text-white">
       {/* Navigation */}
@@ -21,10 +58,22 @@ export default function LandingPage() {
             <span className="font-black tracking-tighter text-lg font-jakarta">HASAMEX</span>
           </div>
 
-          <Link href="/experts" className="h-9 px-5 bg-black text-white rounded-xl text-[11px] font-bold flex items-center gap-2 hover:bg-zinc-800 transition-all active:scale-95 shadow-lg shadow-black/10">
-            Launch App
-            <ArrowRight size={14} />
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/experts" className="h-9 px-5 bg-black text-white rounded-xl text-[11px] font-bold flex items-center gap-2 hover:bg-zinc-800 transition-all active:scale-95 shadow-lg shadow-black/10">
+              Launch App
+              <ArrowRight size={14} />
+            </Link>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('user');
+                window.location.replace('/login');
+              }}
+              className="h-9 px-5 border border-gray-200 text-gray-700 rounded-xl text-[11px] font-bold flex items-center gap-2 hover:bg-gray-50 transition-all active:scale-95"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </nav>
 
