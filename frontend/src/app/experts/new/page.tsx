@@ -17,26 +17,17 @@ export default function AddExpertPage() {
 
   const mutation = useMutation({
     mutationFn: async (data: ExpertFormData & { file?: File }) => {
-      // Extract file from data before creating expert
       const { file, ...expertData } = data;
-      
-      // Step 1: Create the expert using new API
-      const response = await fetch('/api/experts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(expertData)
-      });
-      
-      if (!response.ok) throw new Error('Failed to create expert');
-      
-      const result = await response.json();
-      const expert = result.data;
-      
-      // Step 2: Upload file if provided (skip for now - will add later)
+      const expert = await expertService.create(expertData);
       if (file && expert.id) {
-        addToast('PDF upload will be added later', 'info');
+        try {
+          await expertService.uploadExpertFile(expert.id, file);
+          addToast('PDF uploaded successfully', 'success');
+        } catch (uploadError) {
+          addToast('Expert created but PDF upload failed', 'error');
+          console.error('File upload error:', uploadError);
+        }
       }
-      
       return expert;
     },
     onSuccess: () => {

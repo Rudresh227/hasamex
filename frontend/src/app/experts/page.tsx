@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/Toast';
@@ -724,10 +724,4 @@ function ExpertListPage() {
   );
 }
 
-export default function ExpertListPageWrapper() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ExpertListPage />
-    </Suspense>
-  );
-}
+export default ExpertListPage;

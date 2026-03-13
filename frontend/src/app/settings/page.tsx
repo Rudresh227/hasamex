@@ -48,7 +48,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      {/* <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
@@ -60,7 +60,7 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
 
       <div className="max-w-7xl mx-auto px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
