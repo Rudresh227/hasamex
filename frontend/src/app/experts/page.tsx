@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/components/Toast';
@@ -32,7 +32,7 @@ import EditExpertModal from '@/components/modals/EditExpertModal';
 import DeleteConfirmModal from '@/components/modals/DeleteConfirmModal';
 import ExportEmailModal from '@/components/modals/ExportEmailModal';
 
-export default function ExpertListPage() {
+function ExpertListPage() {
   const { addToast } = useToast();
   const { query: searchQuery } = useSearch();
   const router = useRouter();
@@ -721,5 +721,13 @@ export default function ExpertListPage() {
         experts={selectedExperts}
       />
     </motion.div>
+  );
+}
+
+export default function ExpertListPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ExpertListPage />
+    </Suspense>
   );
 }

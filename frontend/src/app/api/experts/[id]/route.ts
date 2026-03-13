@@ -3,9 +3,10 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { data, error } = await supabase
       .from('experts')
       .select(`
@@ -17,8 +18,8 @@ export async function GET(
         rates(expert_rates(*)),
         files(expert_files(*))
       `)
-      .eq('id', params.id)
-      .single()
+      .eq('id', id)
+      .single();
 
     if (error) throw error
     return NextResponse.json({ data })
@@ -29,17 +30,18 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const expertData = await request.json()
+    const { id } = await params;
+    const expertData = await request.json();
     
     const { data, error } = await supabase
       .from('experts')
       .update(expertData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
-      .single()
+      .single();
 
     if (error) throw error
     return NextResponse.json({ data })
@@ -50,13 +52,14 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { error } = await supabase
       .from('experts')
       .update({ is_deleted: true })
-      .eq('id', params.id)
+      .eq('id', id);
 
     if (error) throw error
     return NextResponse.json({ success: true })

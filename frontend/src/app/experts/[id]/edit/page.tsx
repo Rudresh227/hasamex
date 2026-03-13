@@ -17,12 +17,24 @@ export default function EditExpertPage() {
 
   const { data: expert, isLoading: isFetching } = useQuery({
     queryKey: ['expert', id],
-    queryFn: () => expertService.getById(id as string),
+    queryFn: async () => {
+      const response = await fetch(`/api/experts/${id}`);
+      const result = await response.json();
+      return result.data;
+    },
     enabled: !!id,
   });
 
   const mutation = useMutation({
-    mutationFn: (data: ExpertFormData) => expertService.update(id as string, data),
+    mutationFn: async (data: ExpertFormData) => {
+      const response = await fetch(`/api/experts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      return result.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['experts'] });
       queryClient.invalidateQueries({ queryKey: ['expert', id] });
