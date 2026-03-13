@@ -1,5 +1,5 @@
-import api from '../lib/api';
-import { Expert, ExpertFilters, LookupValue } from '../types/expert';
+import api from '@/lib/api';
+import { Expert, ExpertFilters, LookupValue } from '@/types/expert';
 
 export const expertService = {
   async getAll(filters: ExpertFilters = {}) {
