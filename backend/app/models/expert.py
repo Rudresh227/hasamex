@@ -43,15 +43,17 @@ class Expert(Base):
     
     region_id: Mapped[Optional[int]] = mapped_column(ForeignKey("lookup_values.id"))
     employment_status_id: Mapped[Optional[int]] = mapped_column(ForeignKey("lookup_values.id"))
+    seniority_id: Mapped[Optional[int]] = mapped_column(ForeignKey("lookup_values.id"))
     
-    seniority: Mapped[Optional[str]] = mapped_column(String)
+    seniority: Mapped[Optional[str]] = mapped_column(String)  # Legacy field, now using seniority_id
     years_experience: Mapped[Optional[int]] = mapped_column(Integer)
     headline: Mapped[Optional[str]] = mapped_column(String)
     bio: Mapped[Optional[str]] = mapped_column(Text)
     strength_topics: Mapped[Optional[str]] = mapped_column(Text)
     
     sector_id: Mapped[Optional[int]] = mapped_column(ForeignKey("lookup_values.id"))
-    company_role: Mapped[Optional[str]] = mapped_column(String)
+    company_role_id: Mapped[Optional[int]] = mapped_column(ForeignKey("lookup_values.id"))
+    company_role: Mapped[Optional[str]] = mapped_column(String)  # Legacy field, now using company_role_id
     function_id: Mapped[Optional[int]] = mapped_column(ForeignKey("lookup_values.id"))
     
     hcms_class: Mapped[Optional[str]] = mapped_column(String)
@@ -79,6 +81,8 @@ class Expert(Base):
     status: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[expert_status_id])
     function: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[function_id])
     employment_status: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[employment_status_id])
+    seniority_lookup: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[seniority_id])
+    company_role_lookup: Mapped[Optional["LookupValue"]] = relationship(foreign_keys=[company_role_id])
 
 class ExpertEmployment(Base):
     __tablename__ = "expert_employment"

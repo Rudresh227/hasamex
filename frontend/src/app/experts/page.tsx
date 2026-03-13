@@ -30,6 +30,7 @@ import { Expert, ExpertRate, ExpertUpdate } from '@/types/expert';
 import ViewExpertModal from '@/components/modals/ViewExpertModal';
 import EditExpertModal from '@/components/modals/EditExpertModal';
 import DeleteConfirmModal from '@/components/modals/DeleteConfirmModal';
+import ExportEmailModal from '@/components/modals/ExportEmailModal';
 
 export default function ExpertListPage() {
   const { addToast } = useToast();
@@ -37,6 +38,30 @@ export default function ExpertListPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
+
+  // ── All useState hooks must be declared before any conditional return ──
+
+  // ── Auth: check synchronously so there is no async delay or router loop ──
+  const [isAuthenticated] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return !!localStorage.getItem('isLoggedIn');
+  });
+
+  // If not authenticated, hard-redirect immediately (no router soft-nav loop)
+  useEffect(() => {
+    if (!isAuthenticated) {
+      window.location.replace('/login');
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Load items-per-page preference from localStorage
+  const [itemsPerPage, setItemsPerPage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('itemsPerPage');
+      return saved ? Number(saved) : 10;
+    }
+    return 10;
+  });
 
   const [activeTab, setActiveTab] = useState('All');
   const [page, setPage] = useState(0);
@@ -46,17 +71,26 @@ export default function ExpertListPage() {
   const [statusId, setStatusId] = useState<number | undefined>();
   const [functionId, setFunctionId] = useState<number | undefined>();
   const [sectorId, setSectorId] = useState<number | undefined>();
-  const [selectedExperts, setSelectedExperts] = useState<any[]>([]);
-  
+  const [selectedExperts, setSelectedExperts] = useState<Expert[]>([]);
+  const [expandedHeadlines, setExpandedHeadlines] = useState<Set<string>>(new Set());
+
   // Modal states
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedExpert, setSelectedExpert] = useState<Expert | null>(null);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Update expert mutation
+  // ── Handle hydration mismatch ──
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+
+  // ── Mutations ──
   const updateExpertMutation = useMutation({
-    mutationFn: ({ expert, data }: { expert: Expert; data: ExpertUpdate }) => 
+    mutationFn: ({ expert, data }: { expert: Expert; data: ExpertUpdate }) =>
       expertService.update(expert.id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['experts'] });
@@ -68,7 +102,6 @@ export default function ExpertListPage() {
     }
   });
 
-  // Delete expert mutation
   const deleteExpertMutation = useMutation({
     mutationFn: (expert: Expert) => expertService.delete(expert.id),
     onSuccess: () => {
@@ -81,7 +114,7 @@ export default function ExpertListPage() {
     }
   });
 
-  // Modal handlers
+  // ── Modal handlers ──
   const handleViewExpert = (expert: Expert) => {
     setSelectedExpert(expert);
     setViewModalOpen(true);
@@ -108,11 +141,10 @@ export default function ExpertListPage() {
     }
   };
 
+  // ── Sector badge colours ──
   const getSectorColor = (sector?: string) => {
     if (!sector) return 'bg-slate-100 text-slate-700';
     const s = sector.toLowerCase();
-    
-    // Define colors for different sectors - new color palette
     if (s.includes('technology') || s.includes('software') || s.includes('it')) return 'bg-cyan-100 text-cyan-700';
     if (s.includes('finance') || s.includes('banking') || s.includes('investment')) return 'bg-emerald-100 text-emerald-700';
     if (s.includes('healthcare') || s.includes('medical') || s.includes('pharma')) return 'bg-sky-100 text-sky-600';
@@ -122,12 +154,10 @@ export default function ExpertListPage() {
     if (s.includes('consulting') || s.includes('services') || s.includes('professional')) return 'bg-lime-100 text-lime-700';
     if (s.includes('education') || s.includes('training') || s.includes('academic')) return 'bg-fuchsia-100 text-fuchsia-700';
     if (s.includes('government') || s.includes('public') || s.includes('policy')) return 'bg-stone-100 text-stone-700';
-    
-    // Default color
     return 'bg-slate-100 text-slate-700';
   };
 
-  // Proper debounce for search
+  // ── Search debounce ──
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
@@ -135,7 +165,7 @@ export default function ExpertListPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Initialize from URL
+  // ── Initialise filters from URL ──
   useEffect(() => {
     const search = searchParams.get('search');
     const region = searchParams.get('region_id');
@@ -143,8 +173,7 @@ export default function ExpertListPage() {
     const func = searchParams.get('function_id');
     const sector = searchParams.get('sector_id');
     const pg = searchParams.get('page');
-    
-    // Note: searchQuery is from useSearch hook, need to use router to update URL
+
     if (search) router.push(`/experts?search=${encodeURIComponent(search)}`);
     if (region) setRegionId(Number(region));
     if (status) setStatusId(Number(status));
@@ -153,7 +182,7 @@ export default function ExpertListPage() {
     if (pg) setPage(Number(pg));
   }, []);
 
-  // Sync to URL
+  // ── Sync filters to URL ──
   useEffect(() => {
     const params = new URLSearchParams();
     if (activeTab !== 'All') params.set('sector', activeTab);
@@ -163,31 +192,29 @@ export default function ExpertListPage() {
     if (sectorId) params.set('sector_id', sectorId.toString());
     if (page > 0) params.set('page', page.toString());
     if (debouncedSearch) params.set('search', debouncedSearch);
-    
+
     const queryString = params.toString();
     router.replace(`/experts${queryString ? `?${queryString}` : ''}`, { scroll: false });
   }, [activeTab, debouncedSearch, regionId, statusId, functionId, sectorId, page]);
 
-  // Reset page when filters change
+  // ── Reset page on filter change ──
   useEffect(() => {
-    // Only reset if it's not the initial URL load
-    if (searchParams.toString()) return; 
+    if (searchParams.toString()) return;
     setPage(0);
   }, [activeTab, debouncedSearch, regionId, statusId, functionId, sectorId]);
-  
-  const { data, isLoading } = useQuery({
-    queryKey: ['experts', activeTab, debouncedSearch, page, regionId, statusId, functionId, sectorId],
-    queryFn: () => expertService.getAll({ 
-      search: debouncedSearch || undefined,
+
+  // ── Data queries ──
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['experts', debouncedSearch, regionId, statusId, functionId, sectorId, page, itemsPerPage],
+    queryFn: () => expertService.getAll({
+      search: debouncedSearch,
       region_id: regionId,
-      status_id: statusId,
+      expert_status_id: statusId,
       function_id: functionId,
       sector_id: sectorId,
-      skip: page * 10,
-      limit: 10
-    }),
-    staleTime: 1000 * 60, // 1 minute
-    refetchOnWindowFocus: true,
+      skip: page * itemsPerPage,
+      limit: itemsPerPage
+    })
   });
 
   const { data: sectors } = useQuery({
@@ -212,16 +239,17 @@ export default function ExpertListPage() {
 
   const categories = ['All', ...(sectors?.map((s: any) => s.value) || [])];
 
+  // ── Export handlers ──
   const handleExportCSV = () => {
     const expertsToExport = selectedExperts.length > 0 ? selectedExperts : (data?.items || []);
-    
+
     if (expertsToExport.length === 0) {
       addToast('No data to export', 'error');
       return;
     }
 
     addToast('Generating CSV...', 'info');
-    
+
     try {
       const headers = ['Expert Name', 'ID', 'Headline', 'Sector', 'Function', 'Region', 'Status', 'Rate', 'Calls'];
       const rows = expertsToExport.map(expert => [
@@ -262,34 +290,10 @@ export default function ExpertListPage() {
       addToast('Select experts to export first', 'info');
       return;
     }
-
-    const experts = selectedExperts;
-    
-    addToast('Generating Email Fragment...', 'info');
-    
-    // Simulate complex HTML fragment generation from Plan Section 6.3
-    const htmlFragment = `
-      <table border="1" cellpadding="8" style="border-collapse:collapse; font-family:Arial; width:100%;">
-        <thead><tr style="background:#000; color:#fff;"><th>Name</th><th>Title</th><th>Sector</th><th>Location</th><th>LinkedIn</th></tr></thead>
-        <tbody>
-          ${experts.map(e => `
-            <tr>
-              <td>${e.first_name} ${e.last_name}</td>
-              <td>${e.headline || ''}</td>
-              <td style="color:#666;">${e.sector?.value || ''}</td>
-              <td>${e.region?.value || e.location || ''}</td>
-              <td><a href="${e.linkedin_url || '#'}">Profile</a></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    `;
-
-    // Copy to clipboard for easy pasting as per plan
-    navigator.clipboard.writeText(htmlFragment);
-    addToast('Email HTML fragment copied to clipboard!', 'success');
+    setEmailModalOpen(true);
   };
 
+  // ── Selection helpers ──
   const toggleSelectAll = () => {
     const currentItems = data?.items || [];
     const allSelectedOnPage = currentItems.every(item => selectedExperts.some(e => e.id === item.id));
@@ -304,22 +308,48 @@ export default function ExpertListPage() {
     }
   };
 
-  const toggleSelectRow = (expert: any) => {
-    setSelectedExperts(prev => 
-      prev.some(e => e.id === expert.id) 
-        ? prev.filter(e => e.id !== expert.id) 
+  const toggleSelectRow = (expert: Expert) => {
+    setSelectedExperts(prev =>
+      prev.some(e => e.id === expert.id)
+        ? prev.filter(e => e.id !== expert.id)
         : [...prev, expert]
     );
   };
 
-  // Skip categories definition here as it's moved up
+  const toggleHeadline = (expertId: string) => {
+    setExpandedHeadlines(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(expertId)) {
+        newSet.delete(expertId);
+      } else {
+        newSet.add(expertId);
+      }
+      return newSet;
+    });
+  };
 
-  const stats = [
-    { label: 'Active Experts', value: data?.total || 0, trend: '+4.2%', note: 'vs last month' },
-    { label: 'Network Reach', value: '1.2k', trend: '+12%', note: 'Global connections' },
-    { label: 'Avg. Rating', value: '4.95', trend: 'Stable', note: 'Based on 800+ calls' },
-    { label: 'Revenue Generated', value: '$840k', trend: '+8.1%', note: 'This quarter' },
-  ];
+  // ── Auth loading guard (after all hooks) ──
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-gray-200 border-t-transparent rounded-full animate-spin" />
+          <p className="mt-4 text-sm text-gray-500 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-gray-200 border-t-transparent rounded-full animate-spin" />
+          <p className="mt-4 text-sm text-gray-500 font-medium">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div 
@@ -330,9 +360,9 @@ export default function ExpertListPage() {
       {/* Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {[
-          { label: 'Active Network', value: data?.total || 0, trend: '+4.2%', color: 'from-emerald-500/20', text: 'text-emerald-600' },
-          { label: 'Market Reach', value: '1.2k', trend: 'Global', color: 'from-blue-500/20', text: 'text-blue-600' },
-          { label: 'Engagement', value: '4.9', trend: '/5.0', color: 'from-purple-500/20', text: 'text-purple-600' },
+          { label: 'Active Network', value: data?.total || 0, trend: 'Live', color: 'from-emerald-500/20', text: 'text-emerald-600' },
+          { label: 'Regions', value: regions?.length || 0, trend: 'Global', color: 'from-blue-500/20', text: 'text-blue-600' },
+          { label: 'Functions', value: functions?.length || 0, trend: 'Active', color: 'from-purple-500/20', text: 'text-purple-600' },
           { label: 'Sectors', value: sectors?.length || 0, trend: 'Active', color: 'from-orange-500/20', text: 'text-orange-600' },
         ].map((stat, i) => (
           <motion.div 
@@ -400,7 +430,6 @@ export default function ExpertListPage() {
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
            {/* Modern Filters Bar */}
            <div className="flex flex-wrap items-center gap-2 bg-white/50 backdrop-blur-md p-1.5 rounded-2xl border border-gray-100/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            {/* Filters */}
             <div className="flex bg-gray-100/50 p-1 rounded-xl gap-1">
               <span className="px-3 py-1 text-[11px] font-bold text-gray-600 tracking-wider">Filters</span>
             </div>
@@ -482,7 +511,7 @@ export default function ExpertListPage() {
                   <input 
                     type="checkbox" 
                     className="rounded-md border-gray-300 text-black focus:ring-0"
-                    checked={data?.items.length > 0 && data.items.every(item => selectedExperts.some(e => e.id === item.id))}
+                    checked={(data?.items?.length ?? 0) > 0 && (data?.items ?? []).every(item => selectedExperts.some(e => e.id === item.id))}
                     onChange={toggleSelectAll}
                   />
                 </th>
@@ -494,7 +523,7 @@ export default function ExpertListPage() {
                 <th className="table-header-cell">Status</th>
                 <th className="table-header-cell">Rate</th>
                 <th className="table-header-cell">Calls</th>
-                <th className="table-header-cell text-right pr-6  tracking-[0.2em] font-bold text-[9px] text-zinc-400 font-jakarta">Actions</th>
+                <th className="table-header-cell text-right pr-6 tracking-[0.2em] font-bold text-[9px] text-zinc-400 font-jakarta">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -507,7 +536,7 @@ export default function ExpertListPage() {
                       </td>
                     </tr>
                   ))
-                ) : data?.items.map((expert, i) => (
+                ) : data?.items?.map((expert, i) => (
                   <motion.tr 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -537,8 +566,24 @@ export default function ExpertListPage() {
                       </div>
                     </td>
                     <td className="table-data-cell">
-                      <div className="text-[12px] font-bold text-gray-900 truncate max-w-[200px]" title={expert.headline || 'No headline specified'}>
-                        {expert.headline || 'No headline specified'}
+                      <div className="text-[12px] font-bold text-gray-900">
+                        {expert.headline ? (
+                          <>
+                            <span className={expandedHeadlines.has(expert.id) ? '' : 'truncate block max-w-[200px]'} title={expert.headline}>
+                              {expert.headline}
+                            </span>
+                            {expert.headline.length > 30 && (
+                              <button
+                                onClick={() => toggleHeadline(expert.id)}
+                                className="text-blue-600 hover:text-blue-800 text-[10px] font-medium ml-1"
+                              >
+                                {expandedHeadlines.has(expert.id) ? 'Show less' : 'Show more'}
+                              </button>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-gray-400">No headline specified</span>
+                        )}
                       </div>
                     </td>
                     <td className="table-data-cell">
@@ -622,7 +667,7 @@ export default function ExpertListPage() {
 
           <div className="px-6 py-4 bg-[#fcfcfc] border-t border-gray-100 flex items-center justify-between">
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-              Showing <span className="text-gray-900">{data?.items.length || 0}</span> of {data?.total || 0}
+              Showing <span className="text-gray-900">{data?.items?.length || 0}</span> of {data?.total || 0}
             </span>
             <div className="flex items-center gap-3">
               <button 
@@ -633,11 +678,11 @@ export default function ExpertListPage() {
                 Previous
               </button>
               <span className="text-xs font-medium text-gray-600 px-2">
-                Page <span className="font-bold text-gray-900">{page + 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.total || 0) / 10) || 1}</span>
+                Page <span className="font-bold text-gray-900">{page + 1}</span> of <span className="font-bold text-gray-900">{Math.ceil((data?.total || 0) / itemsPerPage) || 1}</span>
               </span>
               <button 
                 onClick={() => setPage(p => p + 1)}
-                disabled={(data?.items.length || 0) < 10}
+                disabled={(data?.items?.length || 0) < itemsPerPage}
                 className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:border-black transition-all shadow-sm disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Next
@@ -669,6 +714,11 @@ export default function ExpertListPage() {
         onConfirm={handleConfirmDelete}
         expertName={selectedExpert ? `${selectedExpert.first_name} ${selectedExpert.last_name}` : ''}
         isLoading={deleteExpertMutation.isPending}
+      />
+      <ExportEmailModal
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        experts={selectedExperts}
       />
     </motion.div>
   );

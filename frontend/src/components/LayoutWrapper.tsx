@@ -10,8 +10,10 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isLandingPage = pathname === '/';
+  const isLoginPage = pathname === '/login';
 
-  if (isLandingPage) {
+  // Hide sidebar on login and landing pages
+  if (isLandingPage || isLoginPage) {
     return <div className="min-h-screen bg-white">{children}</div>;
   }
 

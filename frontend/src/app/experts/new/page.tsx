@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useToast } from '@/components/Toast';
 import ExpertForm, { ExpertFormData } from '@/components/ExpertForm';
+import { Expert } from '@/types/expert';
 
 export default function AddExpertPage() {
   const router = useRouter();
@@ -15,7 +16,29 @@ export default function AddExpertPage() {
   const { addToast } = useToast();
 
   const mutation = useMutation({
-    mutationFn: (data: ExpertFormData) => expertService.create(data),
+    mutationFn: async (data: ExpertFormData & { file?: File }) => {
+      // Extract file from data before creating expert
+      const { file, ...expertData } = data;
+      
+      // Step 1: Create the expert using new API
+      const response = await fetch('/api/experts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(expertData)
+      });
+      
+      if (!response.ok) throw new Error('Failed to create expert');
+      
+      const result = await response.json();
+      const expert = result.data;
+      
+      // Step 2: Upload file if provided (skip for now - will add later)
+      if (file && expert.id) {
+        addToast('PDF upload will be added later', 'info');
+      }
+      
+      return expert;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['experts'] });
       addToast('Expert successfully onboarded', 'success');

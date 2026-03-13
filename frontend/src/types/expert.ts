@@ -15,13 +15,15 @@ export interface Expert {
   timezone?: string;
   region_id?: number;
   employment_status_id?: number;
+  seniority_id?: number;
   seniority?: string;
   years_experience?: number;
   headline?: string;
   bio?: string;
   strength_topics?: string;
   sector_id?: number;
-  company_role?: string;
+  company_role_id?: number;
+  company_role?: string;  // Legacy field
   function_id?: number;
   hcms_class?: string;
   expert_status_id?: number;
@@ -36,6 +38,8 @@ export interface Expert {
   status?: LookupValue;
   function?: LookupValue;
   employment_status?: LookupValue;
+  seniority_lookup?: LookupValue;
+  company_role_lookup?: LookupValue;
   rates?: ExpertRate[];
   employment_history?: ExpertEmployment[];
   files?: ExpertFile[];
@@ -85,6 +89,7 @@ export interface ExpertUpdate {
   timezone?: string;
   region_id?: number;
   employment_status_id?: number;
+  seniority_id?: number;
   seniority?: string;
   years_experience?: number;
   headline?: string;
@@ -92,6 +97,7 @@ export interface ExpertUpdate {
   strength_topics?: string;
   sector_id?: number;
   function_id?: number;
+  company_role_id?: number;
   company_role?: string;
   hcms_class?: string;
   expert_status_id?: number;

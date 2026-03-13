@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   Users, 
   LayoutGrid, 
@@ -70,6 +70,16 @@ interface SidebarProps {
 
 export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Clear login state
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('user');
+    
+    // Navigate to login page
+    router.push('/login');
+  };
 
   return (
     <div className={cn(
@@ -106,14 +116,14 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           <>
             <div className="space-y-1.5">
               <div className="px-3 mb-3 text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em]">Management</div>
-              <NavItem href="/overview" icon={<LayoutGrid size={18} />} label="System Overview" active={pathname === '/overview'} />
+              {/* <NavItem href="/overview" icon={<LayoutGrid size={18} />} label="System Overview" active={pathname === '/overview'} /> */}
               <NavItem href="/experts" icon={<Users size={18} />} label="Expert Database" active={pathname.startsWith('/experts')} />
             </div>
 
-            <div className="space-y-1.5">
+            {/* <div className="space-y-1.5">
               <div className="px-3 mb-3 text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em]">Platform</div>
               <NavItem href="/settings" icon={<Settings size={18} />} label="System Settings" active={pathname === '/settings'} />
-            </div>
+            </div> */}
           </>
         )}
 
@@ -121,9 +131,9 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         {isCollapsed && (
           <div className="space-y-2">
             <div className="flex justify-center">
-              <Link href="/overview" className="p-2 rounded-lg hover:bg-white/5 transition-colors">
+              {/* <Link href="/overview" className="p-2 rounded-lg hover:bg-white/5 transition-colors">
                 <LayoutGrid size={18} className={pathname === '/overview' ? 'text-white' : 'text-zinc-500'} />
-              </Link>
+              </Link> */}
             </div>
             <div className="flex justify-center">
               <Link href="/experts" className="p-2 rounded-lg hover:bg-white/5 transition-colors">
@@ -144,18 +154,18 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         {!isCollapsed ? (
           <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 cursor-pointer transition-all group">
             <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400 group-hover:bg-zinc-700 group-hover:text-white transition-colors">
-              SK
+              A
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[11px] font-bold text-zinc-100 truncate tracking-tight">Syamal Kishore</div>
+              <div className="text-[11px] font-bold text-zinc-100 truncate tracking-tight">Admin</div>
               <div className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest mt-0.5">Admin</div>
             </div>
-            <LogOut size={14} className="text-zinc-600 group-hover:text-white transition-colors" />
+            <LogOut size={14} className="text-zinc-600 group-hover:text-white transition-colors cursor-pointer" onClick={handleLogout} />
           </div>
         ) : (
           <div className="flex justify-center">
             <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
-              SK
+              A
             </div>
           </div>
         )}

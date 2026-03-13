@@ -6,7 +6,7 @@ import uuid
 from fastapi import HTTPException
 from fastapi import status
 
-from app.models.expert import Expert, ExpertEmployment, ExpertRate, ExpertProject, LookupValue
+from app.models.expert import Expert, ExpertEmployment, ExpertRate, ExpertProject, LookupValue, ExpertFile
 from app.schemas.expert import ExpertCreate, ExpertUpdate
 
 class ExpertService:
@@ -65,7 +65,9 @@ class ExpertService:
             selectinload(Expert.region),
             selectinload(Expert.status),
             selectinload(Expert.function),
-            selectinload(Expert.employment_status)
+            selectinload(Expert.employment_status),
+            selectinload(Expert.seniority_lookup),
+            selectinload(Expert.company_role_lookup)
         )
         
         result = await db.execute(query)
@@ -89,7 +91,9 @@ class ExpertService:
             selectinload(Expert.region),
             selectinload(Expert.status),
             selectinload(Expert.function),
-            selectinload(Expert.employment_status)
+            selectinload(Expert.employment_status),
+            selectinload(Expert.seniority_lookup),
+            selectinload(Expert.company_role_lookup)
         )
         result = await db.execute(query)
         return result.scalar_one_or_none()
@@ -140,7 +144,7 @@ class ExpertService:
         # Refresh with proper relationship loading
         await db.refresh(
             db_expert, 
-            ["employment_history", "rates", "projects", "files", "sector", "region", "status", "function", "employment_status"]
+            ["employment_history", "rates", "projects", "files", "sector", "region", "status", "function", "employment_status", "seniority_lookup", "company_role_lookup"]
         )
         return db_expert
 
@@ -168,8 +172,8 @@ class ExpertService:
         db_expert = await ExpertService.get_expert(db, expert_id)
         if not db_expert:
             return False
-            
-        db_expert.is_deleted = True
+        
+        await db.delete(db_expert)
         await db.commit()
         return True
 
@@ -186,3 +190,48 @@ class ExpertService:
             
         result = await db.execute(query)
         return result.scalars().all()
+
+    # ── File Management Methods ──
+
+    @staticmethod
+    async def add_expert_file(
+        db: AsyncSession,
+        expert_id: uuid.UUID,
+        s3_key: str,
+        filename: str,
+        file_size_kb: int,
+        mime_type: str = "application/pdf",
+        is_primary: bool = False
+    ) -> ExpertFile:
+        """Add a file record to an expert"""
+        expert_file = ExpertFile(
+            expert_id=expert_id,
+            s3_key=s3_key,
+            filename=filename,
+            file_size_kb=file_size_kb,
+            mime_type=mime_type,
+            is_primary=is_primary
+        )
+        db.add(expert_file)
+        await db.commit()
+        await db.refresh(expert_file)
+        return expert_file
+
+    @staticmethod
+    async def get_expert_file(db: AsyncSession, file_id: uuid.UUID) -> Optional[ExpertFile]:
+        """Get a specific file by ID"""
+        result = await db.execute(
+            select(ExpertFile).where(ExpertFile.id == file_id)
+        )
+        return result.scalar_one_or_none()
+
+    @staticmethod
+    async def delete_expert_file(db: AsyncSession, file_id: uuid.UUID) -> bool:
+        """Delete a file record from the database"""
+        expert_file = await ExpertService.get_expert_file(db, file_id)
+        if not expert_file:
+            return False
+        
+        await db.delete(expert_file)
+        await db.commit()
+        return True

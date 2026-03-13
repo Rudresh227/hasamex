@@ -99,13 +99,15 @@ class ExpertBase(BaseModel):
     timezone: Optional[str] = None
     region_id: Optional[int] = None
     employment_status_id: Optional[int] = None
-    seniority: Optional[str] = None
+    seniority_id: Optional[int] = None
+    seniority: Optional[str] = None  # Legacy field
     years_experience: Optional[int] = None
     headline: Optional[str] = None
     bio: Optional[str] = None
     strength_topics: Optional[str] = None
     sector_id: Optional[int] = None
-    company_role: Optional[str] = None
+    company_role_id: Optional[int] = None
+    company_role: Optional[str] = None  # Legacy field
     function_id: Optional[int] = None
     hcms_class: Optional[str] = None
     expert_status_id: Optional[int] = None
@@ -134,12 +136,14 @@ class ExpertUpdate(BaseModel):
     timezone: Optional[str] = None
     region_id: Optional[int] = None
     employment_status_id: Optional[int] = None
+    seniority_id: Optional[int] = None
     seniority: Optional[str] = None
     years_experience: Optional[int] = None
     headline: Optional[str] = None
     bio: Optional[str] = None
     strength_topics: Optional[str] = None
     sector_id: Optional[int] = None
+    company_role_id: Optional[int] = None
     company_role: Optional[str] = None
     function_id: Optional[int] = None
     hcms_class: Optional[str] = None
@@ -164,6 +168,8 @@ class Expert(ExpertBase):
     status: Optional[LookupValue] = None
     function: Optional[LookupValue] = None
     employment_status: Optional[LookupValue] = None
+    seniority_lookup: Optional[LookupValue] = None
+    company_role_lookup: Optional[LookupValue] = None
 
     class Config:
         from_attributes = True

@@ -34,13 +34,14 @@ export const expertSchema = z.object({
   linkedin_url: z.string().url('Invalid URL').or(z.literal('')).optional(),
   bio: z.string().optional(),
   strength_topics: z.string().optional(),
-  sector_id: z.coerce.number().optional(),
-  region_id: z.coerce.number().optional(),
-  expert_status_id: z.coerce.number().optional(),
-  function_id: z.coerce.number().optional(),
+  sector_id: z.coerce.number().optional().transform(val => val === 0 ? null : val),
+  region_id: z.coerce.number().optional().transform(val => val === 0 ? null : val),
+  expert_status_id: z.coerce.number().optional().transform(val => val === 0 ? null : val),
+  employment_status_id: z.coerce.number().optional().transform(val => val === 0 ? null : val),
+  function_id: z.coerce.number().optional().transform(val => val === 0 ? null : val),
   years_experience: z.coerce.number().optional(),
-  seniority: z.string().optional(),
-  company_role: z.string().optional(),
+  seniority_id: z.coerce.number().optional().transform(val => val === 0 ? null : val),
+  company_role_id: z.coerce.number().optional().transform(val => val === 0 ? null : val),
   primary_phone: z.string().optional(),
   timezone: z.string().optional(),
   hcms_class: z.string().optional(),
@@ -109,6 +110,21 @@ export default function ExpertForm({ initialData, onSubmit, isLoading = false, b
   const { data: functions } = useQuery({
     queryKey: ['lookups', 'FUNCTION'],
     queryFn: () => expertService.getLookups('FUNCTION')
+  });
+
+  const { data: employmentStatuses } = useQuery({
+    queryKey: ['lookups', 'EMPLOYMENT_STATUS'],
+    queryFn: () => expertService.getLookups('EMPLOYMENT_STATUS')
+  });
+
+  const { data: seniorities } = useQuery({
+    queryKey: ['lookups', 'SENIORITY'],
+    queryFn: () => expertService.getLookups('SENIORITY')
+  });
+
+  const { data: companyRoles } = useQuery({
+    queryKey: ['lookups', 'COMPANY_ROLE'],
+    queryFn: () => expertService.getLookups('COMPANY_ROLE')
   });
 
   return (
@@ -180,7 +196,7 @@ export default function ExpertForm({ initialData, onSubmit, isLoading = false, b
                 <input {...register('location')} className="input-modern" placeholder="e.g. New York, USA" />
             </div>
         </div>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-3 gap-6">
             <div className="space-y-2">
                 <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Expert Status</label>
                 <select {...register('expert_status_id')} className="input-modern">
@@ -189,8 +205,18 @@ export default function ExpertForm({ initialData, onSubmit, isLoading = false, b
                 </select>
             </div>
             <div className="space-y-2">
+                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Employment Status</label>
+                <select {...register('employment_status_id')} className="input-modern">
+                    <option value="">Select Employment Status</option>
+                    {employmentStatuses?.map((s: any) => <option key={s.id} value={s.id}>{s.value}</option>)}
+                </select>
+            </div>
+            <div className="space-y-2">
                 <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Company Role</label>
-                <input {...register('company_role')} className="input-modern" placeholder="e.g. Managing Partner" />
+                <select {...register('company_role_id')} className="input-modern">
+                    <option value="">Select Company Role</option>
+                    {companyRoles?.map((r: any) => <option key={r.id} value={r.id}>{r.value}</option>)}
+                </select>
             </div>
         </div>
       </div>
@@ -224,7 +250,10 @@ export default function ExpertForm({ initialData, onSubmit, isLoading = false, b
             </div>
             <div className="space-y-2">
                 <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Seniority Level</label>
-                <input {...register('seniority')} className="input-modern" placeholder="e.g. Senior, Executive, C-Level" />
+                <select {...register('seniority_id')} className="input-modern">
+                    <option value="">Select Seniority</option>
+                    {seniorities?.map((s: any) => <option key={s.id} value={s.id}>{s.value}</option>)}
+                </select>
             </div>
         </div>
       </div>
