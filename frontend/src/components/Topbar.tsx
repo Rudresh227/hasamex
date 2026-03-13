@@ -4,9 +4,9 @@ import { Bell, Command, ChevronRight, Plus, ExternalLink, Search, Menu, Settings
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useSearch } from '@/lib/store';
+import { useSearch } from '../lib/store';
 import { useState } from 'react';
-import SettingsModal from '@/components/modals/SettingsModal';
+import SettingsModal from './modals/SettingsModal';
 
 interface TopbarProps {
   onSidebarToggle?: () => void;
